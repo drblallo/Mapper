@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shaders/simple.frag</file>
+        <file>shaders/simple.vert</file>
+        <file>texture/nebula.png</file>
+        <file>shaders/simpleTex.frag</file>
+        <file>shaders/simpleTex.vert</file>
+        <file>shaders/appearinglines.vert</file>
+        <file>shaders/background.frag</file>
+        <file>shaders/background.vert</file>
+    </qresource>
+</RCC>

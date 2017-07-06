@@ -1,0 +1,122 @@
+#include "map.h"
+#include "province.h"
+#include "mapreader.h"
+#define SPEAK
+#include "mapreaderdefines.h"
+#include <iostream>
+
+using namespace mapreader;
+
+Map::Map(QString s) : provincesList(),source(s),  redTexture()
+{
+    source = source.scaled(source.width()*2, source.height()*2, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    createProvinces();
+    finalizeInit();
+}
+
+void Map::createProvinces()
+{
+    MapReader reader(source);
+    const std::vector<RegionPair>* ls(reader.getRegions());
+    WRITE("Created map reader");
+
+    QRgb* modified[source.height()];
+    QRgb black(QColor(0, 0, 0).rgb());
+
+    Province *nullProvince (new Province(black, this));
+    provinces.insert(std::pair<long, Province*>(0, nullProvince));
+    provincesList.push_back(nullProvince);
+
+    for (int a = 0; a < source.height(); a++)
+        modified[a] = (QRgb*)source.scanLine(a);
+
+    for (unsigned a = 0; a < ls->size(); a++)
+    {
+        QRgb col(ls->at(a).first);
+        long id(Province::getIdFromColor(col));
+        if (provinces.find(id) == provinces.end())
+        {
+            WRITE("Created a province");
+            Province* p (new Province(col, this));
+            provinces.insert(std::pair<long, Province*>(id, p));
+            provincesList.push_back(p);
+        }
+    }
+
+    WRITE("Adding borders");
+    for (unsigned a = 0; a < ls->size(); a++)
+    {
+        QRgb col(ls->at(a).first);
+        long id(Province::getIdFromColor(col));
+
+        provinces.find(id)->second->addSubProvince(ls->at(a).second, source, modified);
+    }
+}
+
+void Map::finalizeInit()
+{
+
+    for (unsigned a = 0; a < provincesList.size(); a++)
+        provincesList[a]->index = a;
+
+    setUpRedTexture();
+}
+
+void Map::setUpRedTexture()
+{
+    redTexture.resize(source.height());
+    QRgb* modified[source.height()];
+    for (int a = 0; a < source.height(); a++)
+        modified[a] = (QRgb*)source.scanLine(a);
+
+    for (int a = 0; a < source.height(); a++)
+    {
+        for (int b = 0; b < source.width(); b++)
+        {
+            QRgb col(modified[a][b]);
+            long id(Province::getIdFromColor(col));
+            auto iter(provinces.find(id));
+            if (iter != provinces.end())
+            {
+                unsigned indx(iter->second->getIndex());
+                redTexture[a].push_back(indx);
+            }
+            else
+            {
+                WRITE("a tile has a color of no province");
+                redTexture[a].push_back(0);
+            }
+        }
+    }
+
+}
+
+Map::~Map()
+{
+	for (auto t(provinces.begin()); t != provinces.end(); t++)
+		delete t->second;	
+}
+
+void Map::printMapStat() const
+{
+	for (auto t(provinces.begin()); t != provinces.end(); t++)
+	{
+		std::cout << "id: " << t->first << std::endl;
+		std::cout << "sub regions count: " << t->second->subProvinces.size() << std::endl;
+	}
+}
+
+const Province* Map::getProvince(QRgb color) const 
+{
+	long id(Province::getIdFromColor(color));
+	return getProvince(id);
+}
+
+const Province* Map::getProvince(long id) const
+{
+	auto iter(provinces.find(id));
+	if (iter != provinces.end())
+		return iter->second;
+
+	return NULL;
+}
