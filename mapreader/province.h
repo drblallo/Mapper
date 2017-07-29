@@ -15,6 +15,8 @@ namespace mapreader
 			long getId() const;		
 			QRgb getColor() const;
 			unsigned getIndex() const;
+            int getSubProvinceCount() const {return subProvinces.size();}
+            const SubProvince* getSubProvince(int target) const {return subProvinces[target];}
 
 			Province(const Province&) = delete;
 			Province& operator=(const Province&) = delete;
@@ -23,6 +25,7 @@ namespace mapreader
 		private:	
 			Province(QRgb& col, Map* map);
 			~Province();
+			void updateNeighbourData();
 
 			void addSubProvince(const std::vector<position>& border, QImage& source, QRgb** map);
 

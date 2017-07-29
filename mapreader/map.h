@@ -19,7 +19,8 @@ namespace mapreader
             //const std::map<long, Province*>* getProvincesMap() const {return &provinces;}
 			void printMapStat() const;
 			const QImage* getTexture() const {return &source;}
-            int getIndexOfPixel(int x, int y) const {return redTexture[y][x];}
+            const QImage* getIndexTexture() const {return &indexTexture;}
+            int getIndexOfPixel(int x, int y) const {return indexTexture.pixel(x, y);}
             //const std::vector<std::vector<int> >* getRedTexture() const {return &redTexture;}
 			const std::vector<Province*>* getProvincesList() const {return &provincesList;}
 
@@ -27,7 +28,7 @@ namespace mapreader
             std::map<long, Province*> provinces;
 			std::vector<Province*> provincesList;
 			QImage source;
-			std::vector<std::vector<int> > redTexture;
+            QImage indexTexture;
 
             void createProvinces();
             void setUpRedTexture();

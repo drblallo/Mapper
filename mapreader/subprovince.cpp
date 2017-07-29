@@ -107,3 +107,12 @@ std::vector<NeighbourData> SubProvince::getBorderWith(long id) const
 	}
 	return out;
 }
+
+void SubProvince::updateNeighbourData()
+{
+	for (unsigned a = 0; a < borderNeighbours.size(); a++)
+	{
+		NeighbourData* data(&borderNeighbours[a]);
+		data->neighbourIndex = neighbours.find(data->neighbourID)->second->getIndex();
+	}
+}

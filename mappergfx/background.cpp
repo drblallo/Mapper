@@ -9,12 +9,12 @@
 using namespace mapreader;
 using namespace mappergfx;
 using namespace renderer;
-Background::Background(Map* m) : TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getTexture())), map(m)
+Background::Background(Map* m, ProvincesMask* mask) : TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getIndexTexture())), map(m)
 {
 	std::vector<float> list;
 
-	list.push_back(-1);
-	list.push_back(1);
+    list.push_back(-0.5f);
+    list.push_back(0.5f);
 	list.push_back(0);
 	
 	list.push_back(1);
@@ -27,8 +27,8 @@ Background::Background(Map* m) : TexturedObject(":/shaders/background.vert", ":/
 
 
 	
-	list.push_back(-1);
-	list.push_back(-1);
+    list.push_back(-0.5f);
+    list.push_back(-0.5f);
 	list.push_back(0);
 	
 	list.push_back(1);
@@ -40,8 +40,8 @@ Background::Background(Map* m) : TexturedObject(":/shaders/background.vert", ":/
 	list.push_back(1);
 
 
-	list.push_back(1);
-	list.push_back(1);
+    list.push_back(0.5f);
+    list.push_back(0.5f);
 	list.push_back(0);
 	
 	list.push_back(1);
@@ -53,8 +53,8 @@ Background::Background(Map* m) : TexturedObject(":/shaders/background.vert", ":/
 	list.push_back(0);
 
 
-	list.push_back(1);
-	list.push_back(1);
+    list.push_back(0.5f);
+    list.push_back(0.5f);
 	list.push_back(0);
 	
 	list.push_back(1);
@@ -67,8 +67,8 @@ Background::Background(Map* m) : TexturedObject(":/shaders/background.vert", ":/
 
 
 
-	list.push_back(-1);
-	list.push_back(-1);
+    list.push_back(-0.5f);
+    list.push_back(-0.5f);
 	list.push_back(0);
 	
 	list.push_back(1);
@@ -80,8 +80,8 @@ Background::Background(Map* m) : TexturedObject(":/shaders/background.vert", ":/
 	list.push_back(1);
 
 
-	list.push_back(1);
-	list.push_back(-1);
+    list.push_back(0.5f);
+    list.push_back(-0.5f);
 	list.push_back(0);
 	
 	list.push_back(1);
@@ -99,17 +99,21 @@ Background::Background(Map* m) : TexturedObject(":/shaders/background.vert", ":/
 	renderState.blending.setSourceAlphaFactor(SourceBlendingSourceAlpha);
 	renderState.depthMask = false;
 
-	ProvincesMask mask(map);
-	setProvinceMask(mask);
+    setProvinceMask(*mask);
 
 	texture->setMinificationFilter(QOpenGLTexture::Nearest);
 	texture->setMagnificationFilter(QOpenGLTexture::Nearest);
 	canBeDrawn = true;
 }
 
+
+void Background::Update()
+{
+}
+
 void Background::setProvinceMask(ProvincesMask& mask)
 {
-	delete texture;
+/*	delete texture;
 	texture = Device::createTexture(mask.getImage());
 	shader->bind();
 	texture->bind();
@@ -117,9 +121,12 @@ void Background::setProvinceMask(ProvincesMask& mask)
 	AO.release();
 	texture->release();
 	shader->release();
+*/
+   shader->bind();
+   int location(shader->uniformLocation("provinceColors"));
+   shader->setUniformValueArray(location, &(mask.getColors()->at(0)), mask.getColors()->size());
+   shader->release();
 
-	texture->setMinificationFilter(QOpenGLTexture::Nearest);
-	texture->setMagnificationFilter(QOpenGLTexture::Nearest);
 }
 
 
@@ -127,7 +134,6 @@ Background::~Background()
 {
 	delete texture;
 	regionColorBuffer.destroy();
-
 }
 
 void Background::Prerender()

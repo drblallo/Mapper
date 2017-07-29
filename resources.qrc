@@ -8,5 +8,7 @@
         <file>shaders/appearinglines.vert</file>
         <file>shaders/background.frag</file>
         <file>shaders/background.vert</file>
+        <file>shaders/borders.vert</file>
+        <file>shaders/borders.frag</file>
     </qresource>
 </RCC>

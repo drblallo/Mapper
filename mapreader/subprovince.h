@@ -11,6 +11,7 @@ namespace mapreader
 		int borderStart;
 		int borderEnd;
 		long neighbourID;
+		unsigned neighbourIndex;
 	};
 
 	class Province;
@@ -21,6 +22,7 @@ namespace mapreader
 			bool isNeinghbourOf(Province& p) const;	
 			const Province* getProvince() const {return parent;}
 			const std::vector<position>* getBorders() const {return &border;}	
+            const std::vector<NeighbourData>* getBordersData() const {return &borderNeighbours;}
 			std::vector<NeighbourData> getBorderWith(long id) const;
 			SubProvince(const SubProvince&) = delete;
 			SubProvince& operator=(const SubProvince&) = delete;
@@ -31,6 +33,7 @@ namespace mapreader
 			Province* parent;
 			std::map<long,const Province*> neighbours;
 			std::vector<NeighbourData> borderNeighbours;
+			void updateNeighbourData();
 
 			void addNeighbours(int x, int y, QRgb** source, QImage&);
 			bool touchesNeighbour(int x, int y, QRgb col, QRgb** source, QImage&);

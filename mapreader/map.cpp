@@ -7,7 +7,7 @@
 
 using namespace mapreader;
 
-Map::Map(QString s) : provincesList(),source(s),  redTexture()
+Map::Map(QString s) : provincesList(),source(s), indexTexture(source.width()*2, source.height()*2, source.format())
 {
     source = source.scaled(source.width()*2, source.height()*2, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     createProvinces();
@@ -42,6 +42,8 @@ void Map::createProvinces()
             provincesList.push_back(p);
         }
     }
+    for (unsigned a = 0; a < provincesList.size(); a++)
+        provincesList[a]->index = a;
 
     WRITE("Adding borders");
     for (unsigned a = 0; a < ls->size(); a++)
@@ -55,20 +57,23 @@ void Map::createProvinces()
 
 void Map::finalizeInit()
 {
-
+	
     for (unsigned a = 0; a < provincesList.size(); a++)
-        provincesList[a]->index = a;
+        provincesList[a]->updateNeighbourData();
 
     setUpRedTexture();
 }
 
 void Map::setUpRedTexture()
 {
-    redTexture.resize(source.height());
+    //redTexture.resize(source.height());
     QRgb* modified[source.height()];
+    QRgb* modified2[source.height()];
     for (int a = 0; a < source.height(); a++)
+    {
         modified[a] = (QRgb*)source.scanLine(a);
-
+        modified2[a] = (QRgb*)indexTexture.scanLine(a);
+    }
     for (int a = 0; a < source.height(); a++)
     {
         for (int b = 0; b < source.width(); b++)
@@ -79,12 +84,13 @@ void Map::setUpRedTexture()
             if (iter != provinces.end())
             {
                 unsigned indx(iter->second->getIndex());
-                redTexture[a].push_back(indx);
+                modified2[a][b] = QColor(indx/255, indx%255, 0).rgb();
+                //modified2[a][b] = QColor(0, 255, 0).rgb();
             }
             else
             {
                 WRITE("a tile has a color of no province");
-                redTexture[a].push_back(0);
+                modified2[a][b] = QColor(0, 0, 0).rgb();
             }
         }
     }

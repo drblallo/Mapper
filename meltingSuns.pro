@@ -51,6 +51,8 @@ SOURCES += main.cpp\
 	mapreader/subprovince.cpp \
 	mappergfx/background.cpp \
         mappergfx/provincesmask.cpp \
+    mappergfx/borders.cpp \
+	mappergfx/mapgfx.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -105,6 +107,8 @@ HEADERS  += mainwindow.h \
 	mapreader/subprovince.h \
 	mappergfx/background.h \
         mappergfx/provincesmask.h \
+    mappergfx/borders.h \
+	mappergfx/mapgfx.h
 
 FORMS    += mainwindow.ui \
     mechanics/Widgets/stockpileentitywidget.ui \

@@ -49,3 +49,11 @@ void Province::addSubProvince(const std::vector<position>& border, QImage& sourc
 	SubProvince* p(new SubProvince(this,border, map, source));
 	subProvinces.push_back(p);
 }
+
+void Province::updateNeighbourData()
+{
+	for (unsigned a = 0; a < subProvinces.size(); a++)
+	{
+		subProvinces[a]->updateNeighbourData();
+	}
+}

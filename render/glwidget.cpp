@@ -117,7 +117,7 @@ bool distanceFunction(RenderObject* ogg, RenderObject* ogg2)
 {
 	QVector3D cameraPos(Device::getGraphicWindow()->getCamera()->translation());
 	float d(ogg->getTransform()->translation().distanceToPoint(cameraPos));
-	return (d > ogg2->getTransform()->translation().distanceToPoint(cameraPos));
+    return (d > ogg2->getTransform()->translation().distanceToPoint(cameraPos));
 }
 
 void GLWidget::sortRenderObjects()

@@ -9,8 +9,9 @@
 #include <QVector4D>
 
 #include "mapreader/map.h"
+#include "mappergfx/mapgfx.h"
 #include "render/test/testQuad.h"
-#include "mappergfx/background.h"
+#include "mappergfx/provincesmask.h"
 
 
 int main(int argc, char *argv[])
@@ -18,8 +19,8 @@ int main(int argc, char *argv[])
 	
     mechanics::MechanicsEngine::StartEngine();
 	
-	mapreader::Map map("input.png");
-	map.printMapStat();	
+    mapreader::Map map("input.png");
+    map.printMapStat();
 
     QApplication a(argc, argv);
     QSurfaceFormat format;
@@ -43,12 +44,19 @@ int main(int argc, char *argv[])
 
 	renderer::DefaultScene scene;
 
-	renderer::TestQuad quad;
-	quad.getTransform()->setTranslation(QVector3D(0, 0, -100));
+    //renderer::TestQuad quad;
+    //quad.getTransform()->setTranslation(QVector3D(0, 0, -100));
 
-	mappergfx::Background b(&map);
-	b.getTransform()->setTranslation(0, 0, -10);
-	b.getTransform()->setScale(map.getTexture()->width()/map.getTexture()->height()*10, 10, 10);
+	mappergfx::ProvincesMask mask(&map);
+
+	for (int a =40; a < 56; a++)
+		mask.setColor(QColor(255, 0, 0) ,a);
+
+
+	mappergfx::MapGFX gfx(map, 0.8f);
+	gfx.scale(0.01, 0.01, 10);
+
+	gfx.applyMask(&mask);
 
     return a.exec();
 }
