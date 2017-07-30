@@ -24,6 +24,8 @@ public:
 	void updateMap();
 	void createMap();
 	void changeProvinceGroupToCurrent(int index);
+	void saveColors();
+	void loadColor();
 
 
 private:
@@ -31,6 +33,7 @@ private:
     static MainWindow* mainWindow;
 	mapreader::Map map;
 	mappergfx::MapGFX* graphic;
+	int updateBlocker;
 
 protected:
     virtual void update();

@@ -123,7 +123,7 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resources.qrc
 
-CONFIG += c++14 debug
+CONFIG += c++14 debug console
 
 DISTFILES += \
     shaders/appearinglines.vert \

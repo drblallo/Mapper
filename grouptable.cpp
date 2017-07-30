@@ -14,17 +14,21 @@ GroupTable::GroupTable(QWidget* w) : QTableWidget(w)
 void GroupTable::populate(const Map* map)
 {
 	setSortingEnabled(false);
-	setColumnCount(3);	
+	setColumnCount(4);	
 	setRowCount(1);	
 	//horizontalHeader()->setVisible(false);
 	//for (unsigned a = 0; a < map->getProvincesList()->size(); a++)
 	setItem(0, 0, new QTableWidgetItem("255"));
 	setItem(0, 1, new QTableWidgetItem("255"));
 	setItem(0, 2, new QTableWidgetItem("255"));
+	setItem(0, 3, new QTableWidgetItem(""));
 }
 
 void GroupTable::modified(QTableWidgetItem* item)
 {
+	if (item->column() == 3)
+		return;
+
 	bool ok(true);
 	int t(0);
 	t = item->text().toInt(&ok);
@@ -32,6 +36,18 @@ void GroupTable::modified(QTableWidgetItem* item)
 	if (!ok || t < 0 || t > 255)
 		item->setText("0");
 	
+
+	for (int a = 0; a < 4; a++)
+		if (!item->tableWidget()->item(item->row(), a))
+			return;
+
+	float r(item->tableWidget()->item(item->row(), 0)->text().toInt());
+	float g(item->tableWidget()->item(item->row(), 1)->text().toInt());
+	float b(item->tableWidget()->item(item->row(), 2)->text().toInt());
+
+	QColor c(r, g, b);
+	
+	item->tableWidget()->item(item->row(), 3)->setBackgroundColor(c);
 	
 }
 
@@ -60,4 +76,5 @@ void GroupTable::createRow()
 	setItem(rowCount() - 1, 0, new QTableWidgetItem("255"));
 	setItem(rowCount() - 1, 1, new QTableWidgetItem("255"));
 	setItem(rowCount() - 1, 2, new QTableWidgetItem("255"));
+	setItem(rowCount() - 1, 3, new QTableWidgetItem(""));
 }
