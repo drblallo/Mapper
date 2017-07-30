@@ -14,8 +14,10 @@ MapGFX::MapGFX(Map& m, float scale) : map(m)
 	borders = new Borders(&m, scale, &mask);
 
     background->getTransform()->setTranslation(0, 0, -10);
+   // background->getTransform()->setTranslation(0, 0, 0);
     borders->getTransform()->setTranslation(0, 0, -9.99);
     background->getTransform()->setScale(map.getTexture()->width(), map.getTexture()->height(),  10);
+   // background->getTransform()->setScale(1, 1, 1);
     borders->getTransform()->setScale(1.0f, 1.0f, 1);
 }
 

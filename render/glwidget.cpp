@@ -238,6 +238,19 @@ QVector3D GLWidget::getMouseForward()
     return actualRay.normalized();
 }
 
+void GLWidget::leftMouseDown()
+{
+	for (int a = renderObjects.size() - 1; a >= 0; a--)
+	{
+		QVector3D dir(getMouseForward());
+		//QVector3D dir(m_camera.forward());
+		QVector3D source(m_camera.translation());
+		QVector3D out;
+		if (renderObjects[a]->hitted(&source, &dir, &out))
+			renderObjects[a]->OnMouseDown(out);
+	}
+}
+
 void GLWidget::applyBlending(const RenderState *state)
 {
 

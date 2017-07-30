@@ -15,6 +15,7 @@ void main()
             discard;
    float v = vDepth/farPlane;
    //fColor = texture2D(tex, uvPos) * provincesColor[int(provinceIndex)] * vColor ;
-   fColor = texture2D(tex, uvPos)* vec4(provincesColor[int(provinceIndex)].rgb, 1) * vColor;
+   //fColor = texture2D(tex, uvPos)* vec4(provincesColor[int(provinceIndex)].rgb, 1) * vColor;
+   fColor = texture2D(tex, uvPos) * vColor;
    gl_FragDepth = v;
 }

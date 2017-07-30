@@ -52,7 +52,9 @@ SOURCES += main.cpp\
 	mappergfx/background.cpp \
         mappergfx/provincesmask.cpp \
     mappergfx/borders.cpp \
-	mappergfx/mapgfx.cpp
+	mappergfx/mapgfx.cpp \
+	provincetable.cpp \
+	grouptable.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -108,7 +110,9 @@ HEADERS  += mainwindow.h \
 	mappergfx/background.h \
         mappergfx/provincesmask.h \
     mappergfx/borders.h \
-	mappergfx/mapgfx.h
+	mappergfx/mapgfx.h \
+	provincetable.h \
+	grouptable.h
 
 FORMS    += mainwindow.ui \
     mechanics/Widgets/stockpileentitywidget.ui \

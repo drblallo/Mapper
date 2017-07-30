@@ -99,7 +99,7 @@ void RenderObject::setBuffer(const void * pos, int size)
     buffer.release();
     shader->release();
 }
-void RenderObject::OnMouseDown()
+void RenderObject::OnMouseDown(QVector3D )
 {
 
 }
@@ -130,6 +130,5 @@ void RenderObject::Prerender()
 
 void RenderObject::PostRender()
 {
-
     shader->release();
 }

@@ -75,4 +75,9 @@ void DefaultInputManager::Update()
 		QVector3D v(Device::getGraphicWindow()->getCamera()->translation());
 		std::cout << v.x() << ", " << v.y() << ", " << v.z() << std::endl;
 	}
+
+	if (Input::buttonPressed(Qt::LeftButton))
+	{
+		Device::getGraphicWindow()->leftMouseDown();
+	}
 }

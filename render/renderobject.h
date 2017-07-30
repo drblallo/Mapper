@@ -15,8 +15,8 @@ namespace renderer
 {
     class RenderObject
     {
+		friend class GLWidget;
         public:
-            friend class GLWidget;
         //########################################
         //##### Constructors and Conversions #####
         //########################################
@@ -34,19 +34,21 @@ namespace renderer
         //#####         Accessors            #####
         //########################################
             inline Transform3D* getTransform() {return &transform;}
+            inline const Transform3D* getTransform() const {return &transform;}
             inline bool toBeDrawn() const {return canBeDrawn && !hidden;}
             inline bool visible() const {return !hidden;}
 
         //########################################
         //#####           Methods            #####
         //########################################
-            virtual void OnMouseDown();
+            virtual void OnMouseDown(QVector3D localPoint);
             virtual void OnMouseOver();
             virtual void Prerender();
             virtual void PostRender();
             virtual void Render();
             inline const RenderState* getState() const {return &renderState;}
             inline void hide(bool h){hidden = h;}
+            virtual bool hitted(const QVector3D* source, const QVector3D* direction, QVector3D* out) const = 0;
 
         protected:
         //########################################
@@ -69,7 +71,6 @@ namespace renderer
         //########################################
             virtual void setBuffer(const std::vector<QVector3D>* list);
             virtual void setBuffer(const void* pos, int size);
-            virtual bool hitted(const QVector3D* source, const QVector3D* direction) const = 0;
             inline const QOpenGLShaderProgram* getShader() const {return shader;}
             virtual GLenum getRenderMode() const = 0;
             virtual int getVertexCount() const = 0;

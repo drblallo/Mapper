@@ -38,6 +38,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         void paintGL();
         void teardownGL();
 		void setClearColor(QVector4D color);
+		void leftMouseDown();
 
     //########################################
     //#####         Accessors            #####

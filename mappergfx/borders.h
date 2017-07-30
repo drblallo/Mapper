@@ -14,7 +14,7 @@ namespace mappergfx
         public:
             Borders(mapreader::Map* m, float scale, ProvincesMask* mask);
             virtual ~Borders();
-            virtual bool hitted(const QVector3D *, const QVector3D *) const {return false;}
+            virtual bool hitted(const QVector3D *, const QVector3D *, QVector3D*) const {return false;}
             virtual GLenum getRenderMode() {return GL_TRIANGLES;}
             virtual int getVertexCount() const {return vertexCount;}
 			void setProvinceMask(ProvincesMask* mask);

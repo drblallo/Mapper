@@ -9,7 +9,7 @@ namespace renderer
         public:
             TestQuad();
             virtual ~TestQuad();
-            virtual bool hitted(const QVector3D* source, const QVector3D* direction) const;
+            virtual bool hitted(const QVector3D* source, const QVector3D* direction, QVector3D*) const;
             static std::string vertString;
             static std::string fragString;
             virtual void Update();

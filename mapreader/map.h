@@ -20,7 +20,7 @@ namespace mapreader
 			void printMapStat() const;
 			const QImage* getTexture() const {return &source;}
             const QImage* getIndexTexture() const {return &indexTexture;}
-            int getIndexOfPixel(int x, int y) const {return indexTexture.pixel(x, y);}
+            QRgb getIndexOfPixel(int x, int y) const {return indexTexture.pixel(x, y);}
             //const std::vector<std::vector<int> >* getRedTexture() const {return &redTexture;}
 			const std::vector<Province*>* getProvincesList() const {return &provincesList;}
 

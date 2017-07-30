@@ -67,7 +67,7 @@ TestQuad::~TestQuad()
 {
 }
 
-bool TestQuad::hitted(const QVector3D*, const QVector3D*) const
+bool TestQuad::hitted(const QVector3D*, const QVector3D*, QVector3D*) const
 {
     return false;
 }

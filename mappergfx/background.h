@@ -15,11 +15,12 @@ namespace mappergfx
 		public:
             Background(mapreader::Map* m, ProvincesMask* mask);
 			virtual ~Background();
-			virtual bool hitted(const QVector3D*, const QVector3D*) const{return false;}
+			virtual bool hitted(const QVector3D*, const QVector3D*, QVector3D*) const;
 			virtual int getVertexCount() const {return 6;}
 			virtual GLenum getRenderMode() const {return GL_TRIANGLES;}
 			void setProvinceMask(ProvincesMask& mask);
             virtual void Update();
+			virtual void OnMouseDown(QVector3D localPoint);
 
 			Background(const Background&) = delete;
 			Background& operator= (const TexturedObject&) = delete;

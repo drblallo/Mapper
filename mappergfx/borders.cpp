@@ -71,10 +71,10 @@ void addVertex(
     list.push_back(pos.y()*-1);
     list.push_back(0);
 
-    list.push_back(0.5f);
+    list.push_back(0);
     //list.push_back(float(qRed(color)/255.0f));
-    list.push_back(0.5f);
-    list.push_back(0.5f);
+    list.push_back(0);
+    list.push_back(0);
     list.push_back(1);
 
     list.push_back(u);
