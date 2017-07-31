@@ -107,6 +107,16 @@ Background::Background(Map* m, ProvincesMask* mask) : TexturedObject(":/shaders/
 
 	texture->setMinificationFilter(QOpenGLTexture::Nearest);
 	texture->setMagnificationFilter(QOpenGLTexture::Nearest);
+
+	QImage s("white.png");
+	backgroundTexture = Device::createTexture(&s);
+
+	shader->bind();
+
+	int val = shader->uniformLocation("backgroundTexture");
+	shader->setUniformValue(val, 1);
+	shader->release();
+
 	canBeDrawn = true;
 }
 
@@ -137,12 +147,21 @@ void Background::setProvinceMask(ProvincesMask& mask)
 Background::~Background()
 {
 	delete texture;
+	delete backgroundTexture;
 	regionColorBuffer.destroy();
 }
 
 void Background::Prerender()
 {
 	TexturedObject::Prerender();	
+	backgroundTexture->bind(1);
+}
+
+void Background::PostRender()
+{
+	backgroundTexture->release();
+	TexturedObject::PostRender();
+
 }
 
 //#include <iostream>
@@ -201,4 +220,11 @@ void Background::OnMouseDown(QVector3D intersectionPoint)
 	//int t = map->getProvinc
 	MainWindow::getMainWindow()->changeProvinceGroupToCurrent(index);
 	
+}
+
+void Background::setBackgroundTexture(QString path)
+{
+	QImage m(path);	
+	delete backgroundTexture;
+	backgroundTexture = Device::createTexture(&m);
 }

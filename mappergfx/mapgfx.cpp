@@ -44,4 +44,8 @@ void MapGFX::applyMask(ProvincesMask* mask)
 	background->setProvinceMask(*mask);
 	borders->setProvinceMask(mask);
 }
-			void applyMask(ProvincesMask* mask);
+
+void MapGFX::setBackground(QString path)
+{
+	background->setBackgroundTexture(path);
+}

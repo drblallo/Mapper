@@ -21,6 +21,7 @@ namespace mappergfx
 			void scale(const QVector3D& vec);
 			void scale(float x, float y, float z);
 			void applyMask(ProvincesMask* mask);
+			void setBackground(QString path);
 
 		private:
 			mapreader::Map& map;

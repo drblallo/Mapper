@@ -40,7 +40,7 @@
            <x>0</x>
            <y>0</y>
            <width>539</width>
-           <height>395</height>
+           <height>392</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout">
@@ -128,7 +128,7 @@
      <x>0</x>
      <y>0</y>
      <width>717</width>
-     <height>19</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -137,6 +137,7 @@
     </property>
     <addaction name="actionSaveColors"/>
     <addaction name="actionLoadColors"/>
+    <addaction name="actionLoad_Background"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -157,6 +158,11 @@
   <action name="actionLoadColors">
    <property name="text">
     <string>Load Colors</string>
+   </property>
+  </action>
+  <action name="actionLoad_Background">
+   <property name="text">
+    <string>Load Background</string>
    </property>
   </action>
  </widget>

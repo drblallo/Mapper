@@ -7,6 +7,8 @@ namespace mapreader
 	class Map;
 }
 
+class QOpenGLTexture;
+
 namespace mappergfx
 {
 	class ProvincesMask;
@@ -24,12 +26,16 @@ namespace mappergfx
 
 			Background(const Background&) = delete;
 			Background& operator= (const TexturedObject&) = delete;
+			void setBackgroundTexture(QString path);
 			
 
 		protected:
 			virtual void Prerender();
+			virtual void PostRender();
 			mapreader::Map* map;
 			QOpenGLBuffer regionColorBuffer;
+			QOpenGLTexture* backgroundTexture;
+
 	};
 }
 

@@ -25,7 +25,7 @@ TexturedObject::~TexturedObject()
 void TexturedObject::Prerender()
 {
     RenderObject::Prerender();
-    texture->bind();
+    texture->bind(0);
     //shader->setUniformValue(textureUniformLocation, texture);
 }
 
@@ -46,6 +46,8 @@ void TexturedObject::setBuffer(const void * pos, int size)
     buffer.bind();
     AO.bind();
 
+	int val = shader->uniformLocation("tex");
+	shader->setUniformValue(val, 0);
     buffer.allocate(pos, size);
     shader->enableAttributeArray(0);
     shader->enableAttributeArray(1);

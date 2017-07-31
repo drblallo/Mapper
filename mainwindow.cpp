@@ -41,12 +41,29 @@ void MainWindow::startUI()
 
 	connect(getUI()->actionSaveColors, &QAction::triggered, this, &MainWindow::saveColors);
 	connect(getUI()->actionLoadColors, &QAction::triggered, this, &MainWindow::loadColor);
+	connect(getUI()->actionLoad_Background, &QAction::triggered, this, &MainWindow::loadBackground);
 }
 
 void MainWindow::createMap()
 {
 	graphic = new MapGFX(map, 0.4f);
 	graphic->scale(0.01, 0.01, 10);
+}
+
+void MainWindow::loadBackground()
+{
+
+	QFileDialog f(this, tr("Load File"));
+
+	f.setFileMode(QFileDialog::ExistingFile);
+	f.setNameFilter(tr("Image file (*.png *.jpg)"));
+	f.setDirectory(QDir::home().absolutePath());
+	f.setOption(QFileDialog::DontUseNativeDialog, true);
+
+	if (!f.exec())
+		return;
+
+	graphic->setBackground(f.selectedFiles()[0]);
 }
 
 void MainWindow::saveColors()

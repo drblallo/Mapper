@@ -26,6 +26,7 @@ public:
 	void changeProvinceGroupToCurrent(int index);
 	void saveColors();
 	void loadColor();
+	void loadBackground();
 
 
 private:
