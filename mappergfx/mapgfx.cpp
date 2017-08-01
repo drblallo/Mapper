@@ -49,3 +49,8 @@ void MapGFX::setBackground(QString path)
 {
 	background->setBackgroundTexture(path);
 }
+
+QVector3D MapGFX::getScale() const
+{
+	return borders->getTransform()->scale();
+}

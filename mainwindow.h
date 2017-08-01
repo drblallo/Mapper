@@ -27,6 +27,8 @@ public:
 	void saveColors();
 	void loadColor();
 	void loadBackground();
+	mapreader::Map* getMap() {return &map;}
+	mappergfx::MapGFX* getGraphic(){return graphic;}
 
 
 private:

@@ -53,6 +53,7 @@ SOURCES += main.cpp\
         mappergfx/provincesmask.cpp \
     mappergfx/borders.cpp \
 	mappergfx/mapgfx.cpp \
+	mappergfx/testsubregionareas.cpp \
 	provincetable.cpp \
 	grouptable.cpp
 
@@ -111,6 +112,7 @@ HEADERS  += mainwindow.h \
         mappergfx/provincesmask.h \
     mappergfx/borders.h \
 	mappergfx/mapgfx.h \
+	mappergfx/testsubregionareas.h \
 	provincetable.h \
 	grouptable.h
 

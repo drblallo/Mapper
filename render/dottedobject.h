@@ -32,7 +32,7 @@ namespace renderer
         //########################################
             void setDots(const std::vector<Dot>* dot);
             void setDots(const std::vector<float>* dots, int dotCount);
-            virtual bool hitted(const QVector3D*, const QVector3D*) const {return false;}
+            virtual bool hitted(const QVector3D*, const QVector3D*, QVector3D*) const {return false;}
             static QOpenGLShaderProgram* getShader();
 
         protected:

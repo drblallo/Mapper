@@ -23,6 +23,7 @@ namespace mapreader
 			const Province* getProvince() const {return parent;}
 			const std::vector<position>* getBorders() const {return &border;}	
             const std::vector<NeighbourData>* getBordersData() const {return &borderNeighbours;}
+			const std::pair<float, float>* getCornerBox() const {return boxCorners;}
 			std::vector<NeighbourData> getBorderWith(long id) const;
 			SubProvince(const SubProvince&) = delete;
 			SubProvince& operator=(const SubProvince&) = delete;
@@ -34,6 +35,9 @@ namespace mapreader
 			std::map<long,const Province*> neighbours;
 			std::vector<NeighbourData> borderNeighbours;
 			void updateNeighbourData();
+			void generateLargestInscribedBox();
+			void generateBoxWithOrientation(std::pair<float, float>* outBox, float angle);
+			std::pair<float, float> boxCorners[4];
 
 			void addNeighbours(int x, int y, QRgb** source, QImage&);
 			bool touchesNeighbour(int x, int y, QRgb col, QRgb** source, QImage&);

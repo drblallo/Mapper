@@ -8,11 +8,7 @@
 #include "ui_mainwindow.h"
 #include <QVector4D>
 
-#include "mapreader/map.h"
-#include "mappergfx/mapgfx.h"
-#include "render/test/testQuad.h"
-#include "mappergfx/provincesmask.h"
-
+#include "mappergfx/testsubregionareas.h"
 
 int main(int argc, char *argv[])
 {
@@ -43,8 +39,8 @@ int main(int argc, char *argv[])
 	renderer::DefaultScene scene;
 	w.createMap();
 
-
-
-
+	mappergfx::TestSubRegionAreas t(w.getMap(), w.getGraphic()->getScale());
+	
+	//swarm.getTransform()->scale(1, -1, 1);
     return a.exec();
 }

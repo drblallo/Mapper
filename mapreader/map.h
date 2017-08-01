@@ -16,6 +16,7 @@ namespace mapreader
 
 			const Province* getProvince(QRgb color) const ;
 			const Province* getProvince(long id) const ;
+			Province* getProvinceFromIndex(int index){return provincesList[index];}
             //const std::map<long, Province*>* getProvincesMap() const {return &provinces;}
 			void printMapStat() const;
 			const QImage* getTexture() const {return &source;}

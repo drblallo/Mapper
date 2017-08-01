@@ -27,7 +27,7 @@ namespace renderer
         //#####           Methods            #####
         //########################################
             void setFloatingQuads(std::vector<FloatingQuad> *textures);
-            virtual bool hitted(const QVector3D*, const QVector3D*) const {return false;}
+            virtual bool hitted(const QVector3D*, const QVector3D*, QVector3D* ) const {return false;}
 
         protected:
         //########################################
