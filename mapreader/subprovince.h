@@ -27,6 +27,7 @@ namespace mapreader
 			std::vector<NeighbourData> getBorderWith(long id) const;
 			SubProvince(const SubProvince&) = delete;
 			SubProvince& operator=(const SubProvince&) = delete;
+			float getBoxSize() const;
 			
 		private:
 			SubProvince(Province* parent,const std::vector<position>& border, QRgb** , QImage&);

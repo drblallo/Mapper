@@ -47,13 +47,45 @@ Province::~Province()
 void Province::addSubProvince(const std::vector<position>& border, QImage& source, QRgb** map)
 {
 	SubProvince* p(new SubProvince(this,border, map, source));
+	if (subProvinces.size() == 0)
+		largestBox = 0;
+	else
+		if (p->getBoxSize() > subProvinces[largestBox]->getBoxSize())
+			largestBox = subProvinces.size();
+			
 	subProvinces.push_back(p);
 }
+
+const std::pair<float, float>* Province::getCornerBox() const 
+{
+	if (subProvinces.size() == 0)
+		return NULL;
+	return subProvinces[largestBox]->getCornerBox();
+}
+
 
 void Province::updateNeighbourData()
 {
 	for (unsigned a = 0; a < subProvinces.size(); a++)
 	{
 		subProvinces[a]->updateNeighbourData();
+	}
+}
+
+//#include <iostream>
+void Province::getNeighbours(std::vector<const Province*>* out) const
+{
+	if (index == 0)
+		return;
+	for (unsigned a = 0; a < subProvinces.size(); a++)
+	{
+		SubProvince* s(subProvinces[a]);
+		for (unsigned b = 0; b < s->borderNeighbours.size(); b++)
+		{
+			const Province* p(s->neighbours[s->borderNeighbours[b].neighbourID]);
+			bool found(std::find(out->begin(), out->end(), p) != out->end());
+			if (!found)
+				out->push_back(p);	
+		}
 	}
 }

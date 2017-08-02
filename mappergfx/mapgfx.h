@@ -11,6 +11,7 @@ namespace mappergfx
 	class Background;
 	class Borders;
 	class ProvincesMask;
+	class TestSubRegionAreas;
 	class MapGFX
 	{
 		public:
@@ -23,11 +24,15 @@ namespace mappergfx
 			void applyMask(ProvincesMask* mask);
 			void setBackground(QString path);
 			QVector3D getScale() const;
+			void createTexts(const ProvincesMask* mask);
+            void setCurrentSelected(int index);
 
 		private:
 			mapreader::Map& map;
 			Background* background;
 			Borders* borders;
+
+			TestSubRegionAreas* areas;
 
 	};
 }

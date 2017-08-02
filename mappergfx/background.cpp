@@ -13,7 +13,10 @@
 using namespace mapreader;
 using namespace mappergfx;
 using namespace renderer;
-Background::Background(Map* m, ProvincesMask* mask) : TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getIndexTexture())), map(m)
+Background::Background(Map* m, ProvincesMask* mask) :
+    TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getIndexTexture())),
+    map(m),
+    currSelected(0)
 {
 	std::vector<float> list;
 
@@ -155,6 +158,8 @@ void Background::Prerender()
 {
 	TexturedObject::Prerender();	
 	backgroundTexture->bind(1);
+
+    shader->setUniformValue("selected", currSelected);
 }
 
 void Background::PostRender()
@@ -228,3 +233,9 @@ void Background::setBackgroundTexture(QString path)
 	delete backgroundTexture;
 	backgroundTexture = Device::createTexture(&m);
 }
+
+void Background::setSelected(int index)
+{
+    currSelected = index;
+}
+

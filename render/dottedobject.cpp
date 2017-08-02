@@ -93,9 +93,5 @@ GLenum DottedObject::getRenderMode() const
 
 QOpenGLShaderProgram* DottedObject::getShader()
 {
-    if (!pshader)
-    {
-        pshader = Device::createProgram(vertString, fragString);
-    }
-    return pshader;
+    return Device::createProgram(vertString, fragString);
 }

@@ -109,6 +109,9 @@ void addTris(
     QVector2D direction(second - first);
     QVector2D direction2(third - second);
     QVector2D direction3(first - quart);
+	direction.normalize();
+	direction2.normalize();
+	direction3.normalize();
     direction = QVector2D(direction.y(), direction.x()*-1) / scale;
     direction2 = QVector2D(direction2.y(), direction2.x()*-1) / scale;
     direction3 = QVector2D(direction3.y(), direction3.x()*-1) / scale;
@@ -134,10 +137,10 @@ void addGenerateSubProvinceBorders(std::vector<float>& list, const SubProvince& 
     for (unsigned a = 0; a < neighData->size(); a++)
     {
         NeighbourData data(neighData->at(a));
-        if (data.borderEnd - data.borderStart < 4)
+        int c(10);
+        if (data.borderEnd - data.borderStart < 4 * c)
             continue;
 
-        int c(2);
         for (int x = data.borderStart; x <= data.borderEnd; x = x + c)
         {
             std::pair<int, int> curr(borders->at(x));

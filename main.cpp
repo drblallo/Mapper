@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	renderer::DefaultScene scene;
 	w.createMap();
 
-	mappergfx::TestSubRegionAreas t(w.getMap(), w.getGraphic()->getScale());
+//	mappergfx::TestSubRegionAreas t(w.getMap(), w.getGraphic()->getScale());
 	
 	//swarm.getTransform()->scale(1, -1, 1);
     return a.exec();

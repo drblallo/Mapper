@@ -23,6 +23,7 @@ namespace mappergfx
 			void setProvinceMask(ProvincesMask& mask);
             virtual void Update();
 			virtual void OnMouseDown(QVector3D localPoint);
+            void setSelected(int index);
 
 			Background(const Background&) = delete;
 			Background& operator= (const TexturedObject&) = delete;
@@ -35,6 +36,7 @@ namespace mappergfx
 			mapreader::Map* map;
 			QOpenGLBuffer regionColorBuffer;
 			QOpenGLTexture* backgroundTexture;
+            int currSelected;
 
 	};
 }

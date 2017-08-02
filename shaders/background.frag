@@ -8,6 +8,7 @@ uniform vec3 provinceColors[4000];
 
 uniform sampler2D backgroundTexture;
 uniform sampler2D tex;
+uniform int selected;
 void main()
 {
    float v = vDepth/farPlane;
@@ -17,7 +18,11 @@ void main()
        fColor = vec4(1, 1, 1, 0.5f);
    else
    {
-        fColor = vec4(provinceColors[int(col.r*255.0f*255.0f) + int(col.g*255.0f)], 1);
+       int index = int(col.r*255.0f*255.0f) + int(col.g*255.0f);
+       if (index != selected)
+        fColor = vec4(provinceColors[index], 1);
+       else
+           fColor = vec4(1, 1, 1, 1);
 //        fColor = texCol;
 //        fColor = texCol * vColor;
    }

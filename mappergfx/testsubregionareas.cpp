@@ -2,6 +2,7 @@
 #include "mapreader/map.h"
 #include "mapreader/subprovince.h"
 #include "mapreader/province.h"
+#include "nameplacer.h"
 
 using namespace renderer;
 using namespace mappergfx;
@@ -10,7 +11,7 @@ using namespace mapreader;
 TestSubRegionAreas::TestSubRegionAreas(Map* map, QVector3D scale)
 {
 
-	QImage i("white.png");
+//	QImage i("white.png");
 	//QOpenGLTexture* texture(renderer::Device::createTexture(&i));
 	std::vector<renderer::Dot> quads;
 
@@ -45,6 +46,40 @@ TestSubRegionAreas::TestSubRegionAreas(Map* map, QVector3D scale)
 		}	
 	}
 
+
+	ogg = new LinesObject(&quads);
+	ogg->getTransform()->setTranslation(0, 0, -10);
+	ogg->getTransform()->setScale(scale);
+}
+
+TestSubRegionAreas::TestSubRegionAreas(NamePlacer* plc, Map* map, QVector3D scale)
+{
+	std::vector<renderer::Dot> quads;
+	QVector3D offset(map->getTexture()->width()/-2, map->getTexture()->height()/2, 0);
+
+	for (int b = 0; b < plc->getRegionCount(); b++)
+	{
+		QVector2D* box(plc->getRegion(b)->corners);
+
+		QVector3D start(box[0].x(), -1*box[0].y(), 0);
+		start += offset;
+		quads.push_back(renderer::Dot(start));
+		start = QVector3D(box[1].x(), -1*box[1].y(), 0);
+		start += offset;
+		quads.push_back(renderer::Dot(start));
+		quads.push_back(renderer::Dot(start));
+		start = QVector3D(box[2].x(), -1*box[2].y(), 0);
+		start += offset;
+		quads.push_back(renderer::Dot(start));
+		quads.push_back(renderer::Dot(start));
+		start = QVector3D(box[3].x(), -1*box[3].y(), 0);
+		start += offset;
+		quads.push_back(renderer::Dot(start));
+		quads.push_back(renderer::Dot(start));
+		start = QVector3D(box[0].x(), -1*box[0].y(), 0);
+		start += offset;
+		quads.push_back(renderer::Dot(start));
+	}
 
 	ogg = new LinesObject(&quads);
 	ogg->getTransform()->setTranslation(0, 0, -10);

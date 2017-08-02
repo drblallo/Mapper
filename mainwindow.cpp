@@ -42,11 +42,18 @@ void MainWindow::startUI()
 	connect(getUI()->actionSaveColors, &QAction::triggered, this, &MainWindow::saveColors);
 	connect(getUI()->actionLoadColors, &QAction::triggered, this, &MainWindow::loadColor);
 	connect(getUI()->actionLoad_Background, &QAction::triggered, this, &MainWindow::loadBackground);
+
+    connect(ui->provinceTable, &QTableWidget::currentCellChanged, this, &MainWindow::provinceSelectedChanged);
+}
+
+void MainWindow::provinceSelectedChanged(int cRow, int cCol, int pRow, int pCol)
+{
+    graphic->setCurrentSelected(cRow);
 }
 
 void MainWindow::createMap()
 {
-	graphic = new MapGFX(map, 0.4f);
+	graphic = new MapGFX(map, 0.2f);
 	graphic->scale(0.01, 0.01, 10);
 }
 
@@ -206,6 +213,8 @@ void MainWindow::update()
 
 void MainWindow::changeProvinceGroupToCurrent(int index)
 {
+    if (index == 0)
+        return;
 	int group(getUI()->groupTable->currentRow());
 
 	if (group >= 0)

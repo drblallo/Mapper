@@ -3,11 +3,13 @@
 #include "provincesmask.h"
 #include "borders.h"
 #include "mapreader/map.h"
+#include "nameplacer.h"
+#include "testsubregionareas.h"
 
 using namespace mappergfx;
 using namespace mapreader;
 
-MapGFX::MapGFX(Map& m, float scale) : map(m)
+MapGFX::MapGFX(Map& m, float scale) : map(m), areas(NULL)
 {
 	ProvincesMask mask(&m);
 	background = new Background(&m, &mask);
@@ -19,12 +21,15 @@ MapGFX::MapGFX(Map& m, float scale) : map(m)
     background->getTransform()->setScale(map.getTexture()->width(), map.getTexture()->height(),  10);
    // background->getTransform()->setScale(1, 1, 1);
     borders->getTransform()->setScale(1.0f, 1.0f, 1);
+  //  borders->hide(true);
 }
 
 MapGFX::~MapGFX()
 {
 	delete background;
 	delete borders;
+	if (areas)
+		delete areas;
 }
 
 void MapGFX::scale(const QVector3D& vec)
@@ -43,6 +48,7 @@ void MapGFX::applyMask(ProvincesMask* mask)
 {
 	background->setProvinceMask(*mask);
 	borders->setProvinceMask(mask);
+	createTexts(mask);
 }
 
 void MapGFX::setBackground(QString path)
@@ -54,3 +60,26 @@ QVector3D MapGFX::getScale() const
 {
 	return borders->getTransform()->scale();
 }
+
+void MapGFX::createTexts(const ProvincesMask* mask)
+{
+	NamePlacer plc(mask);
+	/*ifor (int a = 0; a < plc.getRegionCount(); a++)
+	{
+		std::cout << "-" << plc.getRegion(a)->regionIndexes.size() << std::endl;	
+		for (int b = 0; b < plc.getRegion(a)->regionIndexes.size(); b++)
+		{
+			std::cout << plc.getRegion(a)->regionIndexes[b] << std::endl;
+		}
+	}*/
+
+	if (areas)
+		delete areas;
+    areas = new TestSubRegionAreas(&plc, &map ,getScale());
+}
+
+void MapGFX::setCurrentSelected(int index)
+{
+    background->setSelected(index);
+}
+

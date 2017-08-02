@@ -15,13 +15,18 @@ void GroupTable::populate(const Map* map)
 {
 	setSortingEnabled(false);
 	setColumnCount(4);	
-	setRowCount(1);	
+    setRowCount(2);
 	//horizontalHeader()->setVisible(false);
 	//for (unsigned a = 0; a < map->getProvincesList()->size(); a++)
-	setItem(0, 0, new QTableWidgetItem("255"));
-	setItem(0, 1, new QTableWidgetItem("255"));
-	setItem(0, 2, new QTableWidgetItem("255"));
+    setItem(0, 0, new QTableWidgetItem("0"));
+    setItem(0, 1, new QTableWidgetItem("0"));
+    setItem(0, 2, new QTableWidgetItem("0"));
 	setItem(0, 3, new QTableWidgetItem(""));
+
+    setItem(1, 0, new QTableWidgetItem("255"));
+    setItem(1, 1, new QTableWidgetItem("255"));
+    setItem(1, 2, new QTableWidgetItem("255"));
+    setItem(1, 3, new QTableWidgetItem(""));
 }
 
 void GroupTable::modified(QTableWidgetItem* item)

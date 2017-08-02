@@ -27,7 +27,8 @@ public:
 	void saveColors();
 	void loadColor();
 	void loadBackground();
-	mapreader::Map* getMap() {return &map;}
+    void provinceSelectedChanged(int cRow, int cCol, int pRow, int pCol);
+    mapreader::Map* getMap() {return &map;}
 	mappergfx::MapGFX* getGraphic(){return graphic;}
 
 

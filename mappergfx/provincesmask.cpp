@@ -14,34 +14,8 @@ ProvincesMask::ProvincesMask(Map* m) : map(m)//, image(m->getTexture()->width(),
         QColor rgb(m->getProvincesList()->at(a)->getColor());
         provincesColor.push_back(QVector3D(rgb.redF() , rgb.greenF() , rgb.blueF()));
 	}	
-
-	
-//	updateImage();
 }
 
-/*void ProvincesMask::updateImage()
-{
-    //const std::vector<std::vector<int> >* img(map->getRedTexture());
-	QRgb* modified[image.height()];
-	for (int a = 0; a < image.height(); a++)
-		modified[a] = (QRgb*)image.scanLine(a);
-
-	for (int a = 0; a < image.height(); a++)
-	{	
-		for (int b = 0; b < image.width(); b++)
-		{
-
-            unsigned target(map->getIndexOfPixel(b, a));
-			if (target >= map->getProvincesList()->size())
-				continue;
-			Province* p(map->getProvincesList()->at(target));
-			int index(p->getIndex());
-            modified[a][b] = QColor(provincesColor[index].x(), provincesColor[index].y(), provincesColor[index].z()).rgb();
-		}
-	}
-	std::cout << "ended" << std::endl;
-
-}*/
 
 void ProvincesMask::setColor(QColor col, long id)
 {

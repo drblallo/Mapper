@@ -6,6 +6,7 @@
 #include <render/renderState/renderstate.h>
 #include "transform3d.h"
 #include "camera3d.h"
+#include <mutex>
 
 class QOpenGLDebugLogger;
 
@@ -70,6 +71,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         renderer::Scene* scene;
         float farPlane;
         QOpenGLDebugLogger* logger;
+        std::mutex renderingLock;
 
        // bool doOne;
         //int count;

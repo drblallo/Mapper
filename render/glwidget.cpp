@@ -58,7 +58,7 @@ void GLWidget::setClearColor(QVector4D color)
 
 void GLWidget::update()
 {
-
+  //std::lock_guard<std::mutex> m(renderingLock);
   Input::update();
   makeCurrent();
   updateQueue.clear();
@@ -95,6 +95,7 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::paintGL()
 {
+ // std::lock_guard<std::mutex> m(renderingLock);
   //std::cout << count << " paint \n";
   //count++;
   sortRenderObjects();

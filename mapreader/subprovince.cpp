@@ -58,7 +58,7 @@ SubProvince::SubProvince
 	generateLargestInscribedBox();
 }
 
-float areaOfBox(std::pair<float, float>* box)
+float areaOfBox(const std::pair<float, float>* box)
 {
 	std::pair<float, float> edgeOne(box[0].first-box[1].first, box[0].second-box[1].second);
 	std::pair<float, float> edgeTwo(box[1].first-box[2].first, box[1].second-box[2].second);
@@ -226,4 +226,9 @@ void SubProvince::updateNeighbourData()
 		NeighbourData* data(&borderNeighbours[a]);
 		data->neighbourIndex = neighbours.find(data->neighbourID)->second->getIndex();
 	}
+}
+
+float SubProvince::getBoxSize() const
+{
+	return areaOfBox(getCornerBox());
 }

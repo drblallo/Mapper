@@ -17,9 +17,11 @@ namespace mapreader
 			unsigned getIndex() const;
             int getSubProvinceCount() const {return subProvinces.size();}
             const SubProvince* getSubProvince(int target) const {return subProvinces[target];}
+			const std::pair<float, float>* getCornerBox() const;
 
 			Province(const Province&) = delete;
 			Province& operator=(const Province&) = delete;
+			void getNeighbours(std::vector<const Province*>* out) const;
 			static long getIdFromColor(QRgb color);
 
 		private:	
@@ -34,5 +36,6 @@ namespace mapreader
 			long id;
 			int index;
 			std::vector<SubProvince*> subProvinces;
+			int largestBox;
 	};
 }

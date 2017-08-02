@@ -20,13 +20,11 @@ namespace mappergfx
             const std::vector<QVector3D>* getColors() const {return &provincesColor;}
             QRgb getColor(long id) const;
             QRgb getColor(int index) const;
-    //		const QImage* getImage() const {return &image;}
-            //void updateImage();
+			const mapreader::Map* getMap() const {return map;}
+			mapreader::Map* getMap() {return map;}
 
 		private:
 			mapreader::Map* map;
             std::vector<QVector3D> provincesColor;
-        //	QImage image;
-
 	};
 }
