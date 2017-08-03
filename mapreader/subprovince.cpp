@@ -56,6 +56,22 @@ SubProvince::SubProvince
 	}
 
 	generateLargestInscribedBox();
+
+    boundingBox[0].first = border[0].first;
+    boundingBox[0].second = border[0].second;
+    boundingBox[1].first = border[0].first;
+    boundingBox[1].second = border[0].second;
+    for (int a = 1; a < border.size(); a++)
+    {
+        if (boundingBox[0].first > border[a].first)
+            boundingBox[0].first = border[a].first;
+        if (boundingBox[0].second > border[a].second)
+            boundingBox[0].second = border[a].second;
+        if (boundingBox[1].first < border[a].first)
+            boundingBox[1].first = border[a].first;
+        if (boundingBox[1].second < border[a].second)
+            boundingBox[1].second = border[a].second;
+    }
 }
 
 float areaOfBox(const std::pair<float, float>* box)
@@ -158,7 +174,7 @@ void SubProvince::generateLargestInscribedBox()
 	generateBoxWithOrientation(largestBox, 0);
 	for (int a = 1; a < 18; a++)
 	{
-		generateBoxWithOrientation(box, 10*a);	
+        generateBoxWithOrientation(box, std::acos(-1)/18.0f *a);
 		if (areaOfBox(box) > areaOfBox(largestBox))
 			for (int b = 0; b < 4; b++)
 				largestBox[b] = box[b];

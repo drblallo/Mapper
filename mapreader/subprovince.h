@@ -28,6 +28,7 @@ namespace mapreader
 			SubProvince(const SubProvince&) = delete;
 			SubProvince& operator=(const SubProvince&) = delete;
 			float getBoxSize() const;
+            const std::pair<float, float>* getBoundingBox() const {return boundingBox;}
 			
 		private:
 			SubProvince(Province* parent,const std::vector<position>& border, QRgb** , QImage&);
@@ -39,6 +40,8 @@ namespace mapreader
 			void generateLargestInscribedBox();
 			void generateBoxWithOrientation(std::pair<float, float>* outBox, float angle);
 			std::pair<float, float> boxCorners[4];
+            std::pair<float, float> boundingBox[2];
+
 
 			void addNeighbours(int x, int y, QRgb** source, QImage&);
 			bool touchesNeighbour(int x, int y, QRgb col, QRgb** source, QImage&);

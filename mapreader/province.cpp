@@ -60,7 +60,12 @@ const std::pair<float, float>* Province::getCornerBox() const
 {
 	if (subProvinces.size() == 0)
 		return NULL;
-	return subProvinces[largestBox]->getCornerBox();
+    return subProvinces[largestBox]->getCornerBox();
+}
+
+const std::pair<float, float> *Province::getBoudingBox() const
+{
+    return subProvinces[largestBox]->getBoundingBox();
 }
 
 

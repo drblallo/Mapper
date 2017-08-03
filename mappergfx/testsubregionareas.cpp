@@ -81,8 +81,20 @@ TestSubRegionAreas::TestSubRegionAreas(NamePlacer* plc, Map* map, QVector3D scal
 		quads.push_back(renderer::Dot(start));
 	}
 
+    for (int b = 0; b < plc->getRegionCount(); b++)
+    {
+        std::vector<QVector2D>* edges(&plc->getRegion(b)->edges);
+
+        for (int a = 0; a < edges->size(); a++)
+        {
+            QVector3D start(edges->at(a).x(), -1*edges->at(a).y(), 0);
+            start += offset;
+            quads.push_back(renderer::Dot(start));
+        }
+    }
+
 	ogg = new LinesObject(&quads);
-	ogg->getTransform()->setTranslation(0, 0, -10);
+    ogg->getTransform()->setTranslation(0, 0, -9.98);
 	ogg->getTransform()->setScale(scale);
 }
 

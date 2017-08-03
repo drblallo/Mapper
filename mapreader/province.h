@@ -18,6 +18,7 @@ namespace mapreader
             int getSubProvinceCount() const {return subProvinces.size();}
             const SubProvince* getSubProvince(int target) const {return subProvinces[target];}
 			const std::pair<float, float>* getCornerBox() const;
+            const std::pair<float, float>* getBoudingBox() const;
 
 			Province(const Province&) = delete;
 			Province& operator=(const Province&) = delete;

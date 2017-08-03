@@ -114,7 +114,7 @@ HEADERS  += mainwindow.h \
     mappergfx/borders.h \
 	mappergfx/mapgfx.h \
 	mappergfx/testsubregionareas.h \
-	mappergfx/nameplacer.cpp \
+        mappergfx/nameplacer.h \
 	provincetable.h \
 	grouptable.h
 

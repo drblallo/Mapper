@@ -8,7 +8,9 @@ namespace mappergfx
 	{
 		std::vector<int> regionIndexes;	
 		QVector2D corners[4];
-	};
+        std::vector<QVector2D> edges;
+        std::vector<QVector2D> centers;
+    };
 
 	class ProvincesMask;
 
