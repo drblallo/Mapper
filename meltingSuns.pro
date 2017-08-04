@@ -56,7 +56,8 @@ SOURCES += main.cpp\
 	mappergfx/testsubregionareas.cpp \
 	mappergfx/nameplacer.cpp \
 	provincetable.cpp \
-	grouptable.cpp
+	grouptable.cpp \
+    mappergfx/namedisplay.cpp \
 
 
 HEADERS  += mainwindow.h \
@@ -116,7 +117,8 @@ HEADERS  += mainwindow.h \
 	mappergfx/testsubregionareas.h \
         mappergfx/nameplacer.h \
 	provincetable.h \
-	grouptable.h
+	grouptable.h \
+    mappergfx/namedisplay.h \
 
 FORMS    += mainwindow.ui \
     mechanics/Widgets/stockpileentitywidget.ui \
@@ -133,3 +135,4 @@ DISTFILES += \
     shaders/appearinglines.vert \
     shaders/background.frag \
     shaders/background.vert
+

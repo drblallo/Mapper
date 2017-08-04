@@ -10,5 +10,7 @@
         <file>shaders/background.vert</file>
         <file>shaders/borders.vert</file>
         <file>shaders/borders.frag</file>
+        <file>shaders/name.frag</file>
+        <file>shaders/name.vert</file>
     </qresource>
 </RCC>

@@ -34,7 +34,6 @@ void insertAllNeighbours(std::vector<bool>* placed, const std::vector<Province*>
 				QRgb otherCol(mask->getColor(index));
 				if (!placed->at(index) && otherCol == col)
 				{
-                    std::cout << qRed(col)<< ", " << qGreen(col) << ", " << qBlue(col) << std::endl;
 					justAdded.push_back(neighbours[b]);
 					region->regionIndexes.push_back(index);
 					placed->at(index) = true;
@@ -274,6 +273,17 @@ void reduce(QVector2D first, QVector2D second, QVector2D center, QVector2D *min,
 
     }
 }
+void rotate( QVector2D* vals, unsigned ammount)
+{
+
+    for (unsigned a = 0; a < ammount; a++)
+    {
+        QVector2D supp(vals[0]);
+        for (int b = 0; b < 3; b++)
+                vals[b] = vals[b+1];
+        vals[3] = supp;
+    }
+}
 
 void searchForBox(ConnectedRegions* reg, const ProvincesMask* mask, box* outBox, float angle)
 {
@@ -298,6 +308,7 @@ void searchForBox(ConnectedRegions* reg, const ProvincesMask* mask, box* outBox,
     outBox->corners[1] = rotateQVector(QVector2D(min.x(), max.y()), -1*angle);
     outBox->corners[2] = rotateQVector(max, -1*angle);
     outBox->corners[3] = rotateQVector(QVector2D(max.x(), min.y()), -1*angle);
+
 }
 float evalFuncion(float l1, float l2)
 {
@@ -333,8 +344,47 @@ void generateBox(ConnectedRegions* reg, const ProvincesMask* mask)
         }
     }
     for (int a = 0; a < 4; a++)
+    {
         reg->corners[a] = old.corners[a];
+    }
 
+}
+
+void fixOrientation(ConnectedRegions* outBox)
+{
+    for (int a = 0; a < 4; a++)
+        outBox->corners[a] = QVector2D(outBox->corners[a].x(), -1*outBox->corners[a].y());
+
+    QVector2D edge1(outBox->corners[0] - outBox->corners[1]);
+    QVector2D edge2(outBox->corners[1] - outBox->corners[2]);
+
+    if (edge1.x()== 0 || edge2.x() == 0)
+        return;
+
+    if (edge1.length() > edge2.length())
+    {
+        float p1 (-1.0f*outBox->corners[0].x()/edge1.x());
+        float y1 (outBox->corners[0].y() + (edge1.y()*p1));
+
+        float p2 (-1.0f*outBox->corners[2].x()/edge1.x());
+        float y2 (outBox->corners[2].y() + (edge1.y()*p2));
+
+        if (y1 < y2)
+           rotate(outBox->corners, 3);
+        else
+           rotate(outBox->corners, 1);
+    }
+    else
+    {
+        float p1 (-1.0f*outBox->corners[1].x()/edge2.x());
+        float y1 (outBox->corners[1].y() + (edge2.y()*p1));
+
+        float p2 (-1.0f*outBox->corners[3].x()/edge2.x());
+        float y2 (outBox->corners[3].y() + (edge2.y()*p2));
+
+        if (y1 > y2)
+           rotate(outBox->corners, 2);
+    }
 }
 
 void NamePlacer::generateBoxes(const ProvincesMask* mask)
@@ -342,12 +392,14 @@ void NamePlacer::generateBoxes(const ProvincesMask* mask)
     std::cout << division.size() << std::endl;
 	for (unsigned a = 0; a < division.size(); a++)
 	{
-		ConnectedRegions* reg(&division[a]);	
-		if (reg->regionIndexes.size() == 0)
+        ConnectedRegions* reg(&division[a]);
+        reg->name = "Test Name";
+        if (reg->regionIndexes.size() == 0)
 		{
 			for (int c = 0; c < 4; c++)
 				reg->corners[c] = QVector2D(0, 0);
-			continue;
+            fixOrientation(reg);
+            continue;
 		}
         if (reg->regionIndexes.size() == 1)
         {
@@ -357,10 +409,12 @@ void NamePlacer::generateBoxes(const ProvincesMask* mask)
             {
                 reg->corners[c] = QVector2D(box[c].first, box[c].second);
             }
+            fixOrientation(reg);
             continue;
 
         }
 
         generateBox(reg, mask);
+        fixOrientation(reg);
 	}	
 }

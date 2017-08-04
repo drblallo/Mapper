@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <QVector2D>
+#include <QString>
 
 namespace mappergfx
 {
@@ -10,6 +11,7 @@ namespace mappergfx
 		QVector2D corners[4];
         std::vector<QVector2D> edges;
         std::vector<QVector2D> centers;
+        QString name;
     };
 
 	class ProvincesMask;

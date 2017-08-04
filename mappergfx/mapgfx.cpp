@@ -5,15 +5,21 @@
 #include "mapreader/map.h"
 #include "nameplacer.h"
 #include "testsubregionareas.h"
+#include "namedisplay.h"
+#include "render/device.h"
 
 using namespace mappergfx;
 using namespace mapreader;
 
-MapGFX::MapGFX(Map& m, float scale) : map(m), areas(NULL)
+MapGFX::MapGFX(Map& m, float scale) : map(m)
 {
 	ProvincesMask mask(&m);
 	background = new Background(&m, &mask);
 	borders = new Borders(&m, scale, &mask);
+    QImage img("inputa.png");
+    textTexture = renderer::Device::createTexture(&img);
+    textTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    textTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
     background->getTransform()->setTranslation(0, 0, -10);
    // background->getTransform()->setTranslation(0, 0, 0);
@@ -21,15 +27,21 @@ MapGFX::MapGFX(Map& m, float scale) : map(m), areas(NULL)
     background->getTransform()->setScale(map.getTexture()->width(), map.getTexture()->height(),  10);
    // background->getTransform()->setScale(1, 1, 1);
     borders->getTransform()->setScale(1.0f, 1.0f, 1);
-  //  borders->hide(true);
+   // borders->hide(true);
+   // background->hide(true);
 }
 
 MapGFX::~MapGFX()
 {
 	delete background;
 	delete borders;
-	if (areas)
-		delete areas;
+    //if (areas)
+    //	delete areas;
+    while (areas.size() != 0)
+    {
+        delete areas.back();
+        areas.pop_back();
+    }
 }
 
 void MapGFX::scale(const QVector3D& vec)
@@ -63,7 +75,8 @@ QVector3D MapGFX::getScale() const
 
 void MapGFX::createTexts(const ProvincesMask* mask)
 {
-	NamePlacer plc(mask);
+    QVector2D offset(map.getTexture()->width()/-2, map.getTexture()->height()/2);
+    NamePlacer plc(mask);
 	/*ifor (int a = 0; a < plc.getRegionCount(); a++)
 	{
 		std::cout << "-" << plc.getRegion(a)->regionIndexes.size() << std::endl;	
@@ -73,9 +86,20 @@ void MapGFX::createTexts(const ProvincesMask* mask)
 		}
 	}*/
 
-	if (areas)
-		delete areas;
-    areas = new TestSubRegionAreas(&plc, &map ,getScale());
+    while (areas.size() != 0)
+    {
+        delete areas.back();
+        areas.pop_back();
+    }
+
+    for (int a = 0; a < plc.getRegionCount(); a++)
+    {
+        areas.push_back(new NameDisplay(plc.getRegion(a), textTexture, offset));
+        NameDisplay* d(areas.back());
+        d->getTransform()->setTranslation(0, 0, -9.98f + (a*0.001f));
+
+        d->getTransform()->setScale(getScale());
+    }
 }
 
 void MapGFX::setCurrentSelected(int index)

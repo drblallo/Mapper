@@ -12,7 +12,6 @@
 
 int main(int argc, char *argv[])
 {
-	
     mechanics::MechanicsEngine::StartEngine();
 	
 

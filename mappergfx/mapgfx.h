@@ -1,5 +1,6 @@
 #pragma once
 #include <QVector3D>
+#include <QOpenGLTexture>
 
 namespace mapreader
 {
@@ -11,7 +12,7 @@ namespace mappergfx
 	class Background;
 	class Borders;
 	class ProvincesMask;
-	class TestSubRegionAreas;
+    class NameDisplay;
 	class MapGFX
 	{
 		public:
@@ -32,7 +33,9 @@ namespace mappergfx
 			Background* background;
 			Borders* borders;
 
-			TestSubRegionAreas* areas;
+            std::vector<NameDisplay*> areas;
+            QOpenGLTexture* textTexture;
+
 
 	};
 }

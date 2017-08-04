@@ -39,6 +39,7 @@ void TexturedObject::setBuffer(const std::vector<QVector3D>* list)
 {
     setBuffer(&(list->at(0)), sizeof(QVector3D)*list->size());
 }
+
 void TexturedObject::setBuffer(const void * pos, int size)
 {
     shader->bind();
