@@ -26,7 +26,9 @@ public:
 	void changeProvinceGroupToCurrent(int index);
 	void saveColors();
 	void loadColor();
-	void loadBackground();
+    void lockUpdate(){updateBlocker++;}
+    void unlockUpdate(){updateBlocker--;}
+    void loadBackground();
     void provinceSelectedChanged(int cRow, int cCol, int pRow, int pCol);
     mapreader::Map* getMap() {return &map;}
 	mappergfx::MapGFX* getGraphic(){return graphic;}

@@ -19,7 +19,8 @@ class GroupTable : public QTableWidget
 		void populateMask(mappergfx::ProvincesMask* mask) const;
 		void populate(const mapreader::Map* map);
 		QColor getColorOfGroup(int index);
-		void deleteLast();
+        QString getNameOfGroup(int index);
+        void deleteLast();
 		void createRow();
 
 	public slots:

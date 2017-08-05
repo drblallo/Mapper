@@ -42,3 +42,26 @@ QRgb ProvincesMask::getColor(int index) const
     else
         return QColor(0, 0, 0).rgb();
 }
+
+QString ProvincesMask::getName(int index) const
+{
+    QColor col(getColor(index));
+    return getName(col);
+}
+
+QString ProvincesMask::getName(long id) const
+{
+    QColor col(getColor(id));
+    return getName(col);
+}
+
+QString ProvincesMask::getName(QColor col) const
+{
+    for (unsigned a = 0; a < names.size(); a++)
+        if (names[a].first == col)
+            return names[a].second;
+}
+void ProvincesMask::setName(QColor col, QString name)
+{
+    names.push_back(std::pair<QColor, QString>(col, name));
+}

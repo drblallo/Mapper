@@ -33,11 +33,15 @@ void MainWindow::startUI()
 	connect(getUI()->provinceTable, &QTableWidget::itemChanged, this, &MainWindow::updateMap);
 	connect(getUI()->groupTable, &QTableWidget::itemChanged, this, &MainWindow::updateMap);
 
-	connect(getUI()->DeleteGroupButton, &QPushButton::clicked, getUI()->groupTable, &GroupTable::deleteLast);
-	connect(getUI()->DeleteGroupButton, &QPushButton::clicked, this, &MainWindow::updateMap);
+    connect(getUI()->DeleteGroupButton, &QPushButton::clicked, this, &MainWindow::lockUpdate);
+    connect(getUI()->DeleteGroupButton, &QPushButton::clicked, getUI()->groupTable, &GroupTable::deleteLast);
+    connect(getUI()->DeleteGroupButton, &QPushButton::clicked, this, &MainWindow::unlockUpdate);
+    connect(getUI()->DeleteGroupButton, &QPushButton::clicked, this, &MainWindow::updateMap);
 
-	connect(getUI()->CreateGroupButton, &QPushButton::clicked, getUI()->groupTable, &GroupTable::createRow);
-	connect(getUI()->CreateGroupButton, &QPushButton::clicked, this, &MainWindow::updateMap);
+    connect(getUI()->CreateGroupButton, &QPushButton::clicked, this, &MainWindow::lockUpdate);
+    connect(getUI()->CreateGroupButton, &QPushButton::clicked, getUI()->groupTable, &GroupTable::createRow);
+    connect(getUI()->CreateGroupButton, &QPushButton::clicked, this, &MainWindow::unlockUpdate);
+    connect(getUI()->CreateGroupButton, &QPushButton::clicked, this, &MainWindow::updateMap);
 
 	connect(getUI()->actionSaveColors, &QAction::triggered, this, &MainWindow::saveColors);
 	connect(getUI()->actionLoadColors, &QAction::triggered, this, &MainWindow::loadColor);
@@ -55,6 +59,7 @@ void MainWindow::createMap()
 {
 	graphic = new MapGFX(map, 0.2f);
 	graphic->scale(0.01, 0.01, 10);
+    //getUI()->openGLWidget->setMinimumSize(map.getTexture()->width(), map.getTexture()->height());
 }
 
 void MainWindow::loadBackground()
@@ -111,8 +116,10 @@ void MainWindow::saveColors()
 		string = (getUI()->groupTable->item(a, 1)->text());
 		stream << string << "-";
 		string = (getUI()->groupTable->item(a, 2)->text());
-		stream << string;
-		stream << "\n";
+        stream << string << "-";
+        string = (getUI()->groupTable->item(a, 4)->text());
+        stream << string;
+        stream << "\n";
 	}
 	stream << "end\n";
 	path.close();
@@ -162,10 +169,11 @@ void MainWindow::loadColor()
 		if (getUI()->groupTable->rowCount() <= count)
 			getUI()->groupTable->createRow();
 		QStringList ls(line.split('-'));	
-		if (ls.size() == 3)
+        if (ls.size() == 4)
 		{
 			for (int a = 0; a < 3; a++)
 				getUI()->groupTable->item(count, a)->setText(ls[a]);
+            getUI()->groupTable->item(count, 4)->setText(ls[3]);
 		}
 		line = path.readLine();
 		count++;
@@ -180,6 +188,8 @@ void MainWindow::updateMap()
 {
 	if (updateBlocker != 0)
 		return;
+
+    updateBlocker++;
 	ProvincesMask mask(&map);	
 	for (unsigned a = 0; a < map.getProvincesList()->size(); a++)
 	{
@@ -187,8 +197,14 @@ void MainWindow::updateMap()
 		QColor col(getUI()->groupTable->getColorOfGroup(targetGroup ));	
 		mask.setColor(col, int(a));
 	}
+
+    for (unsigned a = 0; a < ui->groupTable->rowCount(); a++)
+    {
+        mask.setName(ui->groupTable->getColorOfGroup(a), ui->groupTable->getNameOfGroup(a));
+    }
 	graphic->applyMask(&mask);
 
+    updateBlocker--;
 
 }
 

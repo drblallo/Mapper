@@ -393,7 +393,7 @@ void NamePlacer::generateBoxes(const ProvincesMask* mask)
 	for (unsigned a = 0; a < division.size(); a++)
 	{
         ConnectedRegions* reg(&division[a]);
-        reg->name = "Test Name";
+        reg->name = "ERROR";
         if (reg->regionIndexes.size() == 0)
 		{
 			for (int c = 0; c < 4; c++)
@@ -401,6 +401,7 @@ void NamePlacer::generateBoxes(const ProvincesMask* mask)
             fixOrientation(reg);
             continue;
 		}
+        reg->name = mask->getName(reg->regionIndexes.at(0));
         if (reg->regionIndexes.size() == 1)
         {
             const Province* p(mask->getMap()->getProvinceFromIndex(reg->regionIndexes[0]));

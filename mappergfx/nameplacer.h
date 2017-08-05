@@ -20,8 +20,9 @@ namespace mappergfx
 	{
 		public:
 			NamePlacer(const ProvincesMask* mask);
-			int getRegionCount() {return division.size();}
+            int getRegionCount() const {return division.size();}
 			ConnectedRegions* getRegion(int region) {return &division[region];}
+            const ConnectedRegions* getRegion(int region) const {return &division[region];}
 
 		private:
 			std::vector<ConnectedRegions> division;

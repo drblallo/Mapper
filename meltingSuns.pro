@@ -58,6 +58,7 @@ SOURCES += main.cpp\
 	provincetable.cpp \
 	grouptable.cpp \
     mappergfx/namedisplay.cpp \
+    mappergfx/fonttotexturearray.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -119,6 +120,7 @@ HEADERS  += mainwindow.h \
 	provincetable.h \
 	grouptable.h \
     mappergfx/namedisplay.h \
+    mappergfx/fonttotexturearray.h
 
 FORMS    += mainwindow.ui \
     mechanics/Widgets/stockpileentitywidget.ui \

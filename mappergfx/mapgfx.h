@@ -34,7 +34,7 @@ namespace mappergfx
 			Borders* borders;
 
             std::vector<NameDisplay*> areas;
-            QOpenGLTexture* textTexture;
+            std::vector<QOpenGLTexture*> textTexture;
 
 
 	};

@@ -9,11 +9,12 @@
 #include <QVector4D>
 
 #include "mappergfx/testsubregionareas.h"
+#include "mappergfx/fonttotexturearray.h"
 
 int main(int argc, char *argv[])
 {
     mechanics::MechanicsEngine::StartEngine();
-	
+
 
     QApplication a(argc, argv);
     QSurfaceFormat format;
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
     format.setOption(QSurfaceFormat::DebugContext);
     format.setSwapInterval(-1);
 	
-	
+
     QSurfaceFormat::setDefaultFormat(format);
 
 

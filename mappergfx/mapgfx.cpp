@@ -7,6 +7,7 @@
 #include "testsubregionareas.h"
 #include "namedisplay.h"
 #include "render/device.h"
+#include "fonttotexturearray.h"
 
 using namespace mappergfx;
 using namespace mapreader;
@@ -16,11 +17,15 @@ MapGFX::MapGFX(Map& m, float scale) : map(m)
 	ProvincesMask mask(&m);
 	background = new Background(&m, &mask);
 	borders = new Borders(&m, scale, &mask);
-    QImage img("inputa.png");
+    /*QImage img("inputa.png");
     textTexture = renderer::Device::createTexture(&img);
     textTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
-    textTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    textTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);*/
+    mappergfx::FontToTextureArray text("font.ttf");
+    for (int a = 0; a < 26; a++)
+        textTexture.push_back(text.getTexture(a));
 
+    NameDisplay::setLetters(textTexture);
     background->getTransform()->setTranslation(0, 0, -10);
    // background->getTransform()->setTranslation(0, 0, 0);
     borders->getTransform()->setTranslation(0, 0, -9.99);
@@ -92,14 +97,14 @@ void MapGFX::createTexts(const ProvincesMask* mask)
         areas.pop_back();
     }
 
-    for (int a = 0; a < plc.getRegionCount(); a++)
-    {
-        areas.push_back(new NameDisplay(plc.getRegion(a), textTexture, offset));
+   // for (int a = 0; a < plc.getRegionCount(); a++)
+    //{
+        areas.push_back(new NameDisplay(&plc, textTexture[1], offset));
         NameDisplay* d(areas.back());
-        d->getTransform()->setTranslation(0, 0, -9.98f + (a*0.001f));
+        d->getTransform()->setTranslation(0, 0, -9.98f);
 
         d->getTransform()->setScale(getScale());
-    }
+    //}
 }
 
 void MapGFX::setCurrentSelected(int index)
