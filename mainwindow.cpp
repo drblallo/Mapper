@@ -5,6 +5,8 @@
 #include "mappergfx/provincesmask.h"
 #include <QColor>
 #include <QFileDialog>
+#include "mappergfx/fonttotexturearray.h"
+#include "mappergfx/namedisplay.h"
 
 
 using namespace mappergfx;
@@ -15,8 +17,9 @@ MainWindow* MainWindow::mainWindow(NULL);
 MainWindow::MainWindow() :
     QMainWindow(NULL),
     ui(new Ui::MainWindow),
-	map("input.png"),
-	graphic(NULL),
+    map(NULL),
+    graphic(NULL),
+    fontName(""),
 	updateBlocker(0)
 
 {
@@ -28,9 +31,8 @@ MainWindow::MainWindow() :
 
 void MainWindow::startUI()
 {
-	getUI()->provinceTable->populate(&map);
-	getUI()->groupTable->populate(&map);
-	connect(getUI()->provinceTable, &QTableWidget::itemChanged, this, &MainWindow::updateMap);
+
+    connect(getUI()->provinceTable, &QTableWidget::itemChanged, this, &MainWindow::updateMap);
 	connect(getUI()->groupTable, &QTableWidget::itemChanged, this, &MainWindow::updateMap);
 
     connect(getUI()->DeleteGroupButton, &QPushButton::clicked, this, &MainWindow::lockUpdate);
@@ -48,23 +50,180 @@ void MainWindow::startUI()
 	connect(getUI()->actionLoad_Background, &QAction::triggered, this, &MainWindow::loadBackground);
 
     connect(ui->provinceTable, &QTableWidget::currentCellChanged, this, &MainWindow::provinceSelectedChanged);
+
+    connect(ui->actionLoad_Map, &QAction::triggered, this, &MainWindow::lockUpdate);
+    connect(ui->actionLoad_Map, &QAction::triggered, this, &MainWindow::loadMap);
+    connect(ui->actionLoad_Map, &QAction::triggered, this, &MainWindow::unlockUpdate);
+
+
+    connect(ui->actionLoad_Font, &QAction::triggered, this, &MainWindow::lockUpdate);
+    connect(ui->actionLoad_Font, &QAction::triggered, this, &MainWindow::loadFont);
+    connect(ui->actionLoad_Font, &QAction::triggered, this, &MainWindow::unlockUpdate);
+    connect(ui->actionLoad_Font, &QAction::triggered, this, &MainWindow::updateMap);
+
+    connect(ui->actionplace_camera_to_origin, &QAction::triggered, this, &MainWindow::resetCameraPosition);
+
+    connect(ui->actionScreen_large_as_image, &QAction::toggled, this, &MainWindow::toggleWidgetCamera);
+
+
+    connect(ui->borderSkip, static_cast<void (QSpinBox::*) (int)> (&QSpinBox::valueChanged), this, &MainWindow::reloadBorders);
+    connect(ui->borderWidth, static_cast<void (QDoubleSpinBox::*) (double)> (&QDoubleSpinBox::valueChanged), this, &MainWindow::reloadBorders);
+
+    connect(ui->backgroundRed, static_cast<void (QSpinBox::*) (int)> (&QSpinBox::valueChanged), this, &MainWindow::updateBackgroundColor);
+    connect(ui->backgroundGreen, static_cast<void (QSpinBox::*) (int)> (&QSpinBox::valueChanged), this, &MainWindow::updateBackgroundColor);
+    connect(ui->backgroundBlue, static_cast<void (QSpinBox::*) (int)> (&QSpinBox::valueChanged), this, &MainWindow::updateBackgroundColor);
+
+    connect(ui->textureBackgroundAlpa, static_cast<void (QDoubleSpinBox::*) (double)> (&QDoubleSpinBox::valueChanged), this, &MainWindow::changeTextureBackgroudAlpha);
+    connect(ui->textureInterpolation, static_cast<void (QDoubleSpinBox::*) (double)> (&QDoubleSpinBox::valueChanged), this, &MainWindow::changeTextureInterpolation);
+
+    connect(ui->actionExport, &QAction::triggered, this, &MainWindow::exportCurrentView);
 }
 
-void MainWindow::provinceSelectedChanged(int cRow, int cCol, int pRow, int pCol)
+void MainWindow::exportCurrentView()
+{
+
+    QFileDialog f(this, tr("Export View"));
+
+    f.setFileMode(QFileDialog::AnyFile);
+    f.setNameFilter(tr("Image file (*.png)"));
+    f.setDirectory(QDir::home().absolutePath());
+    f.setOption(QFileDialog::DontUseNativeDialog, true);
+
+    if (!f.exec())
+        return;
+
+
+    ui->openGLWidget->grabFramebuffer().save(f.selectedFiles()[0]);
+}
+
+void MainWindow::changeTextureBackgroudAlpha()
+{
+    if (graphic)
+        graphic->setBackgroundAlpa(ui->textureBackgroundAlpa->value());
+}
+
+void MainWindow::changeTextureInterpolation()
+{
+    if (graphic)
+        graphic->setBackgroundInterpolationValue(ui->textureInterpolation->value());
+}
+
+void MainWindow::resetCameraPosition()
+{
+    ui->openGLWidget->getCamera()->setRotation(QQuaternion::fromEulerAngles(0, 0, 0));
+
+    ui->openGLWidget->getCamera()->setTranslation(0, 0, 50);
+}
+
+void MainWindow::reloadBorders()
+{
+    if (graphic)
+    {
+        graphic->reloadBorders(ui->borderWidth->value(), ui->borderSkip->value());
+        updateMap();
+    }
+}
+
+void MainWindow::updateBackgroundColor()
+{
+    QVector4D v(ui->backgroundRed->value(), ui->backgroundGreen->value(), ui->backgroundBlue->value(), 1);
+    ui->openGLWidget->setClearColor(v/255.0f);
+}
+
+void MainWindow::loadMap()
+{
+    if (fontName.length() == 0)
+    {
+        mappergfx::FontToTextureArray text("");
+        for (int a = 0; a < 26; a++)
+            textTexture.push_back(text.getTexture(a));
+        NameDisplay::setLetters(textTexture);
+    }
+    QFileDialog f(this, tr("Load Map"));
+
+    f.setFileMode(QFileDialog::ExistingFile);
+    f.setNameFilter(tr("Image file (*.png)"));
+    f.setDirectory(QDir::home().absolutePath());
+    f.setOption(QFileDialog::DontUseNativeDialog, true);
+
+    if (!f.exec())
+        return;
+
+    createMap(f.selectedFiles()[0]);
+    ui->actionSaveColors->setEnabled(true);
+    ui->actionLoadColors->setEnabled(true);
+    ui->actionLoad_Background->setEnabled(true);
+    ui->actionScreen_large_as_image->setEnabled(true);
+}
+
+void MainWindow::toggleWidgetCamera()
+{
+    if (!map)
+        return;
+    if (ui->actionScreen_large_as_image->isChecked())
+    {
+        currentSize = ui->openGLWidget->minimumSize();
+        ui->openGLWidget->setMinimumSize(map->getTexture()->width()/2,map->getTexture()->height()/2);
+    }
+    else
+    {
+        ui->openGLWidget->setMinimumSize(currentSize);
+    }
+}
+
+void MainWindow::loadFont()
+{
+    QFileDialog f(this, tr("Load Font"));
+
+    f.setFileMode(QFileDialog::ExistingFile);
+    f.setNameFilter(tr("Font file (*.ttf)"));
+    f.setDirectory(QDir::home().absolutePath());
+    f.setOption(QFileDialog::DontUseNativeDialog, true);
+
+    if (!f.exec())
+        return;
+
+    fontName = f.selectedFiles()[0];
+    for (int a = 0; a < textTexture.size(); a++)
+    {
+        textTexture[a]->destroy();
+        delete textTexture[a];
+    }
+    textTexture.clear();
+    mappergfx::FontToTextureArray text(fontName);
+    for (int a = 0; a < 26; a++)
+        textTexture.push_back(text.getTexture(a));
+    NameDisplay::setLetters(textTexture);
+}
+
+void MainWindow::provinceSelectedChanged(int cRow, int, int, int)
 {
     graphic->setCurrentSelected(cRow);
 }
 
-void MainWindow::createMap()
+void MainWindow::createMap(QString path)
 {
-	graphic = new MapGFX(map, 0.2f);
-	graphic->scale(0.01, 0.01, 10);
+    if (graphic)
+        delete graphic;
+    if (map)
+        delete map;
+    map = new Map(path);
+    graphic = new MapGFX(*map, 5, 9);
+
+    float scale(100.0f/map->getTexture()->width());
+
+    graphic->scale(scale, scale, 10);
+    getUI()->provinceTable->populate(map);
+    getUI()->groupTable->populate(map);
     //getUI()->openGLWidget->setMinimumSize(map.getTexture()->width(), map.getTexture()->height());
+    resetCameraPosition();
 }
 
 void MainWindow::loadBackground()
 {
 
+    if (!graphic)
+        return;
 	QFileDialog f(this, tr("Load File"));
 
 	f.setFileMode(QFileDialog::ExistingFile);
@@ -80,6 +239,8 @@ void MainWindow::loadBackground()
 
 void MainWindow::saveColors()
 {
+    if (!graphic)
+        return;
 	QFileDialog f(this, tr("Save File"));
 
 	f.setFileMode(QFileDialog::AnyFile);
@@ -127,7 +288,8 @@ void MainWindow::saveColors()
 
 void MainWindow::loadColor()
 {
-	
+    if (!graphic)
+        return;
 	QFileDialog f(this, tr("Load File"));
 
 	f.setFileMode(QFileDialog::ExistingFile);
@@ -186,12 +348,12 @@ void MainWindow::loadColor()
 
 void MainWindow::updateMap()
 {
-	if (updateBlocker != 0)
+    if (updateBlocker != 0 || !graphic)
 		return;
 
     updateBlocker++;
-	ProvincesMask mask(&map);	
-	for (unsigned a = 0; a < map.getProvincesList()->size(); a++)
+    ProvincesMask mask(map);
+    for (unsigned a = 0; a < map->getProvincesList()->size(); a++)
 	{
 		int targetGroup(getUI()->provinceTable->getGroupOfProvince(a));
 		QColor col(getUI()->groupTable->getColorOfGroup(targetGroup ));	
@@ -211,7 +373,10 @@ void MainWindow::updateMap()
 MainWindow::~MainWindow()
 {
     delete ui;
-	delete graphic;
+    if  (graphic)
+        delete graphic;
+    if (map)
+        delete map;
 }
 bool MainWindow::eventFilter(QObject *, QEvent *e)
 {
@@ -229,6 +394,8 @@ void MainWindow::update()
 
 void MainWindow::changeProvinceGroupToCurrent(int index)
 {
+    if (!graphic)
+        return;
     if (index == 0)
         return;
 	int group(getUI()->groupTable->currentRow());

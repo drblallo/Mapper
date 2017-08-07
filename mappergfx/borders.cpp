@@ -25,13 +25,13 @@ QOpenGLTexture* getTexture()
 
 }
 
-Borders::Borders(Map* m, float borderScale, ProvincesMask* mask) :
+Borders::Borders(Map* m, float borderScale, ProvincesMask* mask, int skip) :
     TexturedObject
     (
         ":/shaders/borders.vert",
         ":/shaders/borders.frag",
         getTexture()
-    ), map(m), vertexCount(3), scale(borderScale)
+    ), map(m), vertexCount(3), scale(borderScale), borderSkip(skip)
 {
     setUpData();
     renderState.blending.setEnabled(true);
@@ -112,9 +112,9 @@ void addTris(
 	direction.normalize();
 	direction2.normalize();
 	direction3.normalize();
-    direction = QVector2D(direction.y(), direction.x()*-1) / scale;
-    direction2 = QVector2D(direction2.y(), direction2.x()*-1) / scale;
-    direction3 = QVector2D(direction3.y(), direction3.x()*-1) / scale;
+    direction = QVector2D(direction.y(), direction.x()*-1) * scale;
+    direction2 = QVector2D(direction2.y(), direction2.x()*-1) * scale;
+    direction3 = QVector2D(direction3.y(), direction3.x()*-1) * scale;
 
     QVector2D firsMoved(first + ((direction+direction3)/2));
     QVector2D secondMoved(second + ((direction2+direction)/2));
@@ -130,14 +130,14 @@ void addTris(
     addVertex(list, color, second, 1, 0, provinceIndex, otherProvinceIndex);
 }
 
-void addGenerateSubProvinceBorders(std::vector<float>& list, const SubProvince& province, int mapWidth, int mapHeight, float scale)
+void addGenerateSubProvinceBorders(std::vector<float>& list, const SubProvince& province, int mapWidth, int mapHeight, float scale, int borderSkip)
 {
     auto neighData(province.getBordersData());
     auto borders(province.getBorders());
     for (unsigned a = 0; a < neighData->size(); a++)
     {
         NeighbourData data(neighData->at(a));
-        int c(10);
+        int c(borderSkip+1);
         if (data.borderEnd - data.borderStart < 4 * c)
             continue;
 
@@ -184,17 +184,23 @@ void addGenerateSubProvinceBorders(std::vector<float>& list, const SubProvince& 
     }
 }
 
-void addGenerateProvinceBorders(std::vector<float>& list,Province& province, int mapWidth, int mapHeight, float scale)
+void addGenerateProvinceBorders(std::vector<float>& list,Province& province, int mapWidth, int mapHeight, float scale, int borderSkip)
 {
     for (int a = 0; a < province.getSubProvinceCount(); a++)
-        addGenerateSubProvinceBorders(list, *province.getSubProvince(a), mapWidth, mapHeight, scale);
+        addGenerateSubProvinceBorders(list, *province.getSubProvince(a), mapWidth, mapHeight, scale, borderSkip);
 }
 void Borders::setUpData()
 {
     std::vector<float> list;
 
     for (unsigned a = 1; a < map->getProvincesList()->size(); a++)
-        addGenerateProvinceBorders(list, *map->getProvincesList()->at(a), map->getTexture()->width(), map->getTexture()->height(), scale);
+        addGenerateProvinceBorders(
+                    list,
+                    *map->getProvincesList()->at(a),
+                    map->getTexture()->width(),
+                    map->getTexture()->height(),
+                    scale,
+                    borderSkip);
 
 
     setBuffer(&(list[0]), list.size() * sizeof(float));

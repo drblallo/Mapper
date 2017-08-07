@@ -11,26 +11,33 @@
 
 
 using namespace mappergfx;
+
+
+QString getFamily(QString path)
+{
+
+    QFile f (path);
+    if (!f.exists())
+        std::cout << "file does not exists" << std::endl;
+    if (f.open(QIODevice::ReadOnly) == false)
+    {
+        QFont f;
+        return f.defaultFamily();
+    }
+    int id = QFontDatabase::addApplicationFontFromData(f.readAll());
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    return family;
+}
+
 FontToTextureArray::FontToTextureArray(QString path)
 {
+    QString family(getFamily(path));
     for (int a = 0; a < 26; a++)
     {
         images[a] = new QImage(128, 128, QImage::Format_ARGB32);
         images[a]->fill(Qt::transparent);
     }
 
-    QFile f (path);
-    if (!f.exists())
-        std::cout << "file does not exists" << std::endl;
-    QFileInfo info(f);
-    if (f.open(QIODevice::ReadOnly) == false)
-    {
-        std::cout << "failed to open" << std::endl;
-    }
-    int id = QFontDatabase::addApplicationFontFromData(f.readAll());
-    if (id < 0)
-        return;
-    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     QFont font(family, 128);
     QFontMetrics metrics(font);
     int dim = 127;

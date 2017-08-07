@@ -118,11 +118,27 @@ Background::Background(Map* m, ProvincesMask* mask) :
 
 	int val = shader->uniformLocation("backgroundTexture");
 	shader->setUniformValue(val, 1);
-	shader->release();
+    shader->setUniformValue("blackSpaceAlpha", 1.0f);
+    shader->setUniformValue("textureColorImportance", 0.0f);
+    shader->release();
 
 	canBeDrawn = true;
 }
 
+void Background::setBlackSpaceAlpha(float value)
+{
+    shader->bind();
+    shader->setUniformValue("blackSpaceAlpha", value);
+    shader->release();
+}
+
+void Background::setTextureImportace(float value)
+{
+    shader->bind();
+    shader->setUniformValue("textureColorImportance", value);
+    shader->release();
+
+}
 
 void Background::Update()
 {

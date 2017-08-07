@@ -12,7 +12,7 @@ namespace mappergfx
     class Borders : public renderer::TexturedObject
     {
         public:
-            Borders(mapreader::Map* m, float scale, ProvincesMask* mask);
+            Borders(mapreader::Map* m, float scale, ProvincesMask* mask, int borderSkip = 0);
             virtual ~Borders();
             virtual bool hitted(const QVector3D *, const QVector3D *, QVector3D*) const {return false;}
             virtual GLenum getRenderMode() {return GL_TRIANGLES;}
@@ -28,6 +28,7 @@ namespace mappergfx
             void setUpData();
             int vertexCount;
 			float scale;
+            int borderSkip;
 
     };
 }

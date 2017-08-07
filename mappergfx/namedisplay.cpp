@@ -9,8 +9,8 @@ using namespace mappergfx;
 
 std::vector<QOpenGLTexture*> NameDisplay::letters;
 
-NameDisplay::NameDisplay(const NamePlacer *region, QOpenGLTexture* texture, QVector2D off) :
-    TexturedObject(":/shaders/name.vert", ":/shaders/name.frag", texture), offset(off)
+NameDisplay::NameDisplay(const NamePlacer *region, QVector2D off) :
+    TexturedObject(":/shaders/name.vert", ":/shaders/name.frag", letters[0]), offset(off)
 {
     std::vector<float> buffer;
 

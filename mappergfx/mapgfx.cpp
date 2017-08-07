@@ -12,24 +12,19 @@
 using namespace mappergfx;
 using namespace mapreader;
 
-MapGFX::MapGFX(Map& m, float scale) : map(m)
+MapGFX::MapGFX(Map& m, float scale, int borderSkip) : map(m)
 {
 	ProvincesMask mask(&m);
 	background = new Background(&m, &mask);
-	borders = new Borders(&m, scale, &mask);
+    borders = new Borders(&m, scale, &mask, borderSkip);
     /*QImage img("inputa.png");
     textTexture = renderer::Device::createTexture(&img);
     textTexture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     textTexture->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);*/
-    mappergfx::FontToTextureArray text("font.ttf");
-    for (int a = 0; a < 26; a++)
-        textTexture.push_back(text.getTexture(a));
-
-    NameDisplay::setLetters(textTexture);
-    background->getTransform()->setTranslation(0, 0, -10);
+    background->getTransform()->setTranslation(0, 0, 0);
    // background->getTransform()->setTranslation(0, 0, 0);
-    borders->getTransform()->setTranslation(0, 0, -9.99);
-    background->getTransform()->setScale(map.getTexture()->width(), map.getTexture()->height(),  10);
+    borders->getTransform()->setTranslation(0, 0, 0.01);
+    background->getTransform()->setScale(map.getTexture()->width(), map.getTexture()->height(),  1);
    // background->getTransform()->setScale(1, 1, 1);
     borders->getTransform()->setScale(1.0f, 1.0f, 1);
    // borders->hide(true);
@@ -99,12 +94,33 @@ void MapGFX::createTexts(const ProvincesMask* mask)
 
    // for (int a = 0; a < plc.getRegionCount(); a++)
     //{
-        areas.push_back(new NameDisplay(&plc, textTexture[1], offset));
+        areas.push_back(new NameDisplay(&plc, offset));
         NameDisplay* d(areas.back());
-        d->getTransform()->setTranslation(0, 0, -9.98f);
+        d->getTransform()->setTranslation(0, 0, 0.02f);
 
         d->getTransform()->setScale(getScale());
     //}
+}
+
+void MapGFX::setBackgroundInterpolationValue(float value)
+{
+    background->setTextureImportace(value);
+}
+
+void MapGFX::setBackgroundAlpa(float value)
+{
+    background->setBlackSpaceAlpha(value);
+}
+
+void MapGFX::reloadBorders(float borderWidth, int borderSkip)
+{
+    QVector3D scale = getScale();
+    ProvincesMask mask(&map);
+    delete borders;
+    borders = new Borders(&map, borderWidth, &mask, borderSkip);
+    borders->getTransform()->setTranslation(0, 0, 0.01);
+    borders->getTransform()->setScale(1.0f, 1.0f, 1);
+    borders->getTransform()->scale(scale);
 }
 
 void MapGFX::setCurrentSelected(int index)

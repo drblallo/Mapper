@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "mappergfx/mapgfx.h"
 #include "mapreader/map.h"
+#include <QOpenGLTexture>
 
 
 namespace Ui {
@@ -22,24 +23,36 @@ public:
     inline Ui::MainWindow* getUI(){return ui;}
     void startUI();
 	void updateMap();
-	void createMap();
+    void createMap(QString path);
 	void changeProvinceGroupToCurrent(int index);
 	void saveColors();
 	void loadColor();
     void lockUpdate(){updateBlocker++;}
     void unlockUpdate(){updateBlocker--;}
     void loadBackground();
+    void loadMap();
+    void loadFont();
+    void resetCameraPosition();
     void provinceSelectedChanged(int cRow, int cCol, int pRow, int pCol);
-    mapreader::Map* getMap() {return &map;}
+    void toggleWidgetCamera();
+    void reloadBorders();
+    void updateBackgroundColor();
+    void changeTextureBackgroudAlpha();
+    void changeTextureInterpolation();
+    void exportCurrentView();
+    mapreader::Map* getMap() {return map;}
 	mappergfx::MapGFX* getGraphic(){return graphic;}
 
 
 private:
     Ui::MainWindow *ui;
     static MainWindow* mainWindow;
-	mapreader::Map map;
+    mapreader::Map* map;
 	mappergfx::MapGFX* graphic;
-	int updateBlocker;
+    QString fontName;
+    std::vector<QOpenGLTexture*> textTexture;
+    int updateBlocker;
+    QSize currentSize;
 
 protected:
     virtual void update();

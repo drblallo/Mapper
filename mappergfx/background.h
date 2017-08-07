@@ -24,6 +24,8 @@ namespace mappergfx
             virtual void Update();
 			virtual void OnMouseDown(QVector3D localPoint);
             void setSelected(int index);
+            void setBlackSpaceAlpha(float value);
+            void setTextureImportace(float value);
 
 			Background(const Background&) = delete;
 			Background& operator= (const TexturedObject&) = delete;

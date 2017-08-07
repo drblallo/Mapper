@@ -66,10 +66,10 @@ void DefaultInputManager::Update()
       m_camera->translate(transSpeed * translation);
     }
 
-	if (Input::keyReleased(Qt::Key_P))
-	{
-		Device::getGraphicWindow()->grabFramebuffer().save(QString("out.png"));
-	}
+    //if (Input::keyReleased(Qt::Key_P))
+    //{
+//		Device::getGraphicWindow()->grabFramebuffer().save(QString("out.png"));
+    //}
 	if (Input::keyReleased(Qt::Key_N))
 	{
 		QVector3D v(Device::getGraphicWindow()->getCamera()->translation());

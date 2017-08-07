@@ -16,7 +16,7 @@ namespace mappergfx
 	class MapGFX
 	{
 		public:
-			MapGFX(mapreader::Map& m, float borderScale);
+            MapGFX(mapreader::Map& m, float borderScale, int borderSkip);
 			~MapGFX();
 			MapGFX& operator=(MapGFX& other) = delete;
 			MapGFX(MapGFX& other) = delete;
@@ -27,6 +27,10 @@ namespace mappergfx
 			QVector3D getScale() const;
 			void createTexts(const ProvincesMask* mask);
             void setCurrentSelected(int index);
+            void reloadBorders(float borderWidth, int borderSkip);
+            void setBackgroundInterpolationValue(float value);
+            void setBackgroundAlpa(float value);
+
 
 		private:
 			mapreader::Map& map;
@@ -34,7 +38,6 @@ namespace mappergfx
 			Borders* borders;
 
             std::vector<NameDisplay*> areas;
-            std::vector<QOpenGLTexture*> textTexture;
 
 
 	};

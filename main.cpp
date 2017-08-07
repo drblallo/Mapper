@@ -34,10 +34,11 @@ int main(int argc, char *argv[])
     w.resize(a.desktop()->size().width(), a.desktop()->size().height());
     //w.resize(2000, 2000);
     w.show();
-	QVector4D v(0, 0, 200, 0);
+    QVector4D v(0, 0, 0, 0);
 	w.getUI()->openGLWidget->setClearColor(v);
+
 	renderer::DefaultScene scene;
-	w.createMap();
+//	w.createMap();
 
 //	mappergfx::TestSubRegionAreas t(w.getMap(), w.getGraphic()->getScale());
 	
