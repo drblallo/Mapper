@@ -58,7 +58,8 @@ SOURCES += main.cpp\
 	provincetable.cpp \
 	grouptable.cpp \
     mappergfx/namedisplay.cpp \
-    mappergfx/fonttotexturearray.cpp
+    mappergfx/fonttotexturearray.cpp \
+    mappergfx/letterdisplay.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -120,7 +121,8 @@ HEADERS  += mainwindow.h \
 	provincetable.h \
 	grouptable.h \
     mappergfx/namedisplay.h \
-    mappergfx/fonttotexturearray.h
+    mappergfx/fonttotexturearray.h \
+    mappergfx/letterdisplay.h
 
 FORMS    += mainwindow.ui \
     mechanics/Widgets/stockpileentitywidget.ui \
@@ -132,6 +134,8 @@ RESOURCES += \
     resources.qrc
 
 CONFIG += c++14 debug console
+
+DESTDIR =
 
 DISTFILES += \
     shaders/appearinglines.vert \

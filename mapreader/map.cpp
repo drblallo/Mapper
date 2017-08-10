@@ -7,7 +7,12 @@
 
 using namespace mapreader;
 
-Map::Map(QString s) : provincesList(),source(s), indexTexture(source.width()*2, source.height()*2, source.format())
+Map::Map(QString s) :
+    provincesList(),
+    source(s),
+    indexTexture(source.width()*2, source.height()*2, source.format()),
+    indexOpenglTexture(QOpenGLTexture::Target2D)
+
 {
     source = source.scaled(source.width()*2, source.height()*2, Qt::IgnoreAspectRatio, Qt::FastTransformation);
     createProvinces();
@@ -62,6 +67,7 @@ void Map::finalizeInit()
         provincesList[a]->updateNeighbourData();
 
     setUpRedTexture();
+  //  setUpOpenGLRedTexture();
 }
 
 void Map::setUpRedTexture()
@@ -84,7 +90,7 @@ void Map::setUpRedTexture()
             if (iter != provinces.end())
             {
                 unsigned indx(iter->second->getIndex());
-                modified2[a][b] = QColor(indx/255, indx%255, 0).rgb();
+                modified2[a][b] = QColor(std::floor(indx/255.0f), indx%255, 0).rgb();
                 //modified2[a][b] = QColor(0, 255, 0).rgb();
             }
             else
@@ -96,6 +102,49 @@ void Map::setUpRedTexture()
     }
 
 }
+
+void Map::setUpOpenGLRedTexture()
+{
+    indexOpenglTexture.setSize(source.width(), source.height());
+    indexOpenglTexture.setAutoMipMapGenerationEnabled(false);
+    indexOpenglTexture.setMagnificationFilter(QOpenGLTexture::Linear);
+    indexOpenglTexture.setMinificationFilter(QOpenGLTexture::Linear);
+   // indexOpenglTexture.setMinimumLevelOfDetail(0);
+   // indexOpenglTexture.setMaximumLevelOfDetail(0);
+    indexOpenglTexture.setFormat(QOpenGLTexture::R32I);
+    //indexOpenglTexture.setLayers(1);
+  //  indexOpenglTexture.setMipLevels(1);
+    indexOpenglTexture.allocateStorage(QOpenGLTexture::Red_Integer, QOpenGLTexture::Int32);
+
+    std::vector<int> val(source.width() * source.height());
+
+    std::vector<QRgb*> modified(source.height());
+    for (int a = 0; a < source.height(); a++)
+        modified[a] = (QRgb*)source.scanLine(a);
+
+    for (int a = 0; a < source.height(); a++)
+    {
+        for (int b = 0; b < source.width(); b++)
+        {
+            QRgb col(modified[a][b]);
+            long id(Province::getIdFromColor(col));
+            auto iter(provinces.find(id));
+            if (iter != provinces.end())
+            {
+                int indx(iter->second->getIndex());
+                val[b + (a*source.width())] = indx;
+                //modified2[a][b] = QColor(0, 255, 0).rgb();
+            }
+            else
+            {
+                WRITE("a tile has a color of no province");
+                val[b + (a*source.width())] = 0;
+            }
+        }
+    }
+    indexOpenglTexture.setData(QOpenGLTexture::Red_Integer, QOpenGLTexture::Int32, &(modified.at(0)));
+}
+
 
 Map::~Map()
 {

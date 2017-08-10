@@ -132,13 +132,6 @@ void MainWindow::updateBackgroundColor()
 
 void MainWindow::loadMap()
 {
-    if (fontName.length() == 0)
-    {
-        mappergfx::FontToTextureArray text("");
-        for (int a = 0; a < 26; a++)
-            textTexture.push_back(text.getTexture(a));
-        NameDisplay::setLetters(textTexture);
-    }
     QFileDialog f(this, tr("Load Map"));
 
     f.setFileMode(QFileDialog::ExistingFile);
@@ -193,7 +186,7 @@ void MainWindow::loadFont()
     mappergfx::FontToTextureArray text(fontName);
     for (int a = 0; a < 26; a++)
         textTexture.push_back(text.getTexture(a));
-    NameDisplay::setLetters(textTexture);
+    graphic->setLetters(textTexture);
 }
 
 void MainWindow::provinceSelectedChanged(int cRow, int, int, int)

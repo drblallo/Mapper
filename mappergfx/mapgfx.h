@@ -1,6 +1,7 @@
 #pragma once
 #include <QVector3D>
 #include <QOpenGLTexture>
+#include "namedisplay.h"
 
 namespace mapreader
 {
@@ -30,6 +31,7 @@ namespace mappergfx
             void reloadBorders(float borderWidth, int borderSkip);
             void setBackgroundInterpolationValue(float value);
             void setBackgroundAlpa(float value);
+            void setLetters(std::vector<QOpenGLTexture*> letters){areas.setLetters(letters);}
 
 
 		private:
@@ -37,7 +39,7 @@ namespace mappergfx
 			Background* background;
 			Borders* borders;
 
-            std::vector<NameDisplay*> areas;
+            NameDisplay areas;
 
 
 	};

@@ -12,5 +12,7 @@
         <file>shaders/borders.frag</file>
         <file>shaders/name.frag</file>
         <file>shaders/name.vert</file>
+        <file>shaders/letter.frag</file>
+        <file>shaders/letter.vert</file>
     </qresource>
 </RCC>

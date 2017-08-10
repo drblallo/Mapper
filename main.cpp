@@ -6,6 +6,7 @@
 #include <iostream>
 #include "render/defaultscene.h"
 #include "ui_mainwindow.h"
+#include <QFontDatabase>
 #include <QVector4D>
 
 #include "mappergfx/testsubregionareas.h"
@@ -14,20 +15,27 @@
 int main(int argc, char *argv[])
 {
     mechanics::MechanicsEngine::StartEngine();
-
+    QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
     QApplication a(argc, argv);
     QSurfaceFormat format;
     format.setRenderableType(QSurfaceFormat::OpenGL);
     format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setVersion(4,1);
+    format.setVersion(3,3);
     format.setDepthBufferSize(a.desktop()->depth());
     format.setSamples(2);
     format.setOption(QSurfaceFormat::DebugContext);
     format.setSwapInterval(-1);
-	
-
     QSurfaceFormat::setDefaultFormat(format);
+
+    int id = QFontDatabase::addApplicationFont("arial.ttf");
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    QFont font(family, 10);
+    a.setFont(font);
+    //QCoreApplication::addLibraryPath("./platforms");
+    //QCoreApplication::addLibraryPath("platforms");
+//    QCoreApplication::addLibraryPath("./");
+
 
 
     MainWindow w;

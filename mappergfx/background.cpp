@@ -14,7 +14,7 @@ using namespace mapreader;
 using namespace mappergfx;
 using namespace renderer;
 Background::Background(Map* m, ProvincesMask* mask) :
-    TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getIndexTexture())),
+    TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getIndexImage())),
     map(m),
     currSelected(0)
 {
@@ -122,7 +122,7 @@ Background::Background(Map* m, ProvincesMask* mask) :
     shader->setUniformValue("textureColorImportance", 0.0f);
     shader->release();
 
-	canBeDrawn = true;
+    canBeDrawn = true;
 }
 
 void Background::setBlackSpaceAlpha(float value)
@@ -165,7 +165,7 @@ void Background::setProvinceMask(ProvincesMask& mask)
 
 Background::~Background()
 {
-	delete texture;
+    delete texture;
 	delete backgroundTexture;
 	regionColorBuffer.destroy();
 }

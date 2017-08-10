@@ -42,6 +42,10 @@ void GLWidget::initializeGL()
   //glCullFace(GL_BACK);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glPointSize(1);
+
+  int val;
+  glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &val);
+  std::cout << "max array size " << val << std::endl;
   //resizeGL(111, 11111);
 
    logger = new QOpenGLDebugLogger(this);
@@ -73,17 +77,20 @@ void GLWidget::update()
   for (unsigned int a = 0; a < updateQueue.size(); a++)
       updateQueue[a]->Update();
 
-  GLenum error = GL_NO_ERROR;
-  do {
-      error = glGetError();
-      if (error != GL_NO_ERROR)
-      {
-          const QList<QOpenGLDebugMessage> messages = logger->loggedMessages();
-          for (const QOpenGLDebugMessage &message : messages)
-              qDebug() << message;
-      }
-  } while (error != GL_NO_ERROR);
+    if (context()->format().testOption(QSurfaceFormat::DebugContext))
+    {
+      GLenum error = GL_NO_ERROR;
+      do {
+          error = glGetError();
+          if (error != GL_NO_ERROR)
+          {
+              const QList<QOpenGLDebugMessage> messages = logger->loggedMessages();
+              for (const QOpenGLDebugMessage &message : messages)
+                  qDebug() << message;
+          }
 
+      } while (error != GL_NO_ERROR);
+      }
   QOpenGLWidget::update();
 }
 

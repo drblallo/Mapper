@@ -114,7 +114,8 @@ void RenderObject::Render()
     Prerender();
     AO.bind();
     shader->setUniformValue(modelToWorld, transform.toMatrix());
-    glDrawArrays(getRenderMode(), 0, getVertexCount());
+    //glDrawArrays(getRenderMode(), 0, getVertexCount());
+    QOpenGLContext::currentContext()->functions()->glDrawArrays(getRenderMode(), 0, getVertexCount());
     AO.release();
     PostRender();
 }

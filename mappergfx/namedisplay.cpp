@@ -3,53 +3,54 @@
 #include <iostream>
 #include <QOpenGLShader>
 #include <QOpenGLTexture>
+#include "letterdisplay.h"
+#include "fonttotexturearray.h"
 
 using namespace renderer;
 using namespace mappergfx;
 
-std::vector<QOpenGLTexture*> NameDisplay::letters;
 
 NameDisplay::NameDisplay(const NamePlacer *region, QVector2D off) :
-    TexturedObject(":/shaders/name.vert", ":/shaders/name.frag", letters[0]), offset(off)
+    /*TexturedObject(":/shaders/name.vert", ":/shaders/name.frag", letters[0]),*/ offset(off)
 {
-    std::vector<float> buffer;
 
-    for (int a = 0; a < region->getRegionCount(); a++)
-        addRegionToBuffer(region->getRegion(a), buffer, off);
-    setBuffer(&buffer);
+    mappergfx::FontToTextureArray text("arial.ttf");
+    for (int a = 0; a < 26; a++)
+        letters.push_back(text.getTexture(a));
+    for (int a = 0; a < 26; a++)
+        letterDisplays.push_back(new LetterDisplay(letters[a]));
 
 
+    setText(region);
 
-   // transform.setScale(1, 1, 1);
-   // transform.setTranslation(0, 0, -8.98);
-   // renderState.facetCulling.setCullFace(renderer::CullFaceFrontAndBack);
-    renderState.blending.setEnabled(true);
+    /*renderState.blending.setEnabled(true);
     renderState.blending.setDestinationAlphaFactor(DestinationBlendingOneMinusAlpha);
     renderState.blending.setSourceAlphaFactor(SourceBlendingSourceAlpha);
     renderState.depthMask = false;
 
-    shader->bind();;
+    shader->bind();
     std::vector<int> t;
     for (int a = 0; a < 26; a++)
         t.push_back(a+1);
     shader->setUniformValueArray("letters", &(t[0]), 26);
 
-    /*for (int a = 0; a < 26; a++)
-    {
-        QString str("letters[");
-        str.append(QString::number(a));
-        str.append("]");
-        int loc = shader->uniformLocation(str);
-        if (loc < 0)
-            std::cout << "error" << std::endl;
-        shader->setUniformValue(loc, a+1);
-    }*/
-    shader->release();
+    int val = shader->uniformLocation("tex");
+    shader->setUniformValue(val, 0);
+    shader->release();*/
 
-    canBeDrawn = true;
+//    canBeDrawn = true;
 }
 
-void NameDisplay::addRegionToBuffer(const ConnectedRegions* region, std::vector<float>& buffer, QVector2D& offset)
+NameDisplay::NameDisplay(QVector2D off) : offset(off)
+{
+    mappergfx::FontToTextureArray text("arial.ttf");
+    for (int a = 0; a < 26; a++)
+        letters.push_back(text.getTexture(a));
+    for (int a = 0; a < 26; a++)
+        letterDisplays.push_back(new LetterDisplay(letters[a]));
+}
+
+void NameDisplay::addRegionToBuffer(const ConnectedRegions* region, std::vector<float>& buffer)
 {
     std::vector<QVector2D> corners;
 
@@ -58,7 +59,6 @@ void NameDisplay::addRegionToBuffer(const ConnectedRegions* region, std::vector<
     corners.push_back(region->corners[2] + offset);
     corners.push_back(region->corners[3] + offset);
 
-    //addBox(&buffer, corners);
     QVector2D minorEdge(corners[1]-corners[0]);
     QVector2D majorEdge((-1*corners[0])+corners[3]);
     QVector2D halfWay((corners[0]+corners[1])/2.0f);
@@ -80,23 +80,44 @@ void NameDisplay::addRegionToBuffer(const ConnectedRegions* region, std::vector<
 
 }
 
+NameDisplay::~NameDisplay()
+{
+    for (int a = 0; a < 26; a++)
+        delete letterDisplays[a];
+}
+
 void NameDisplay::addBox(std::vector<float>& buffer, std::vector<QVector2D>& corners, char letter)
 {
-    buffer.push_back(corners[0].x());
-    buffer.push_back(corners[0].y());
-    buffer.push_back(0);
+    QVector3D v(corners[0].x(), corners[0].y(), 0);
+    buffer.push_back(v.x());
+    buffer.push_back(v.y());
+    buffer.push_back(v.z());
 
     buffer.push_back(0);
     buffer.push_back(0);
     buffer.push_back(int(letter-'A'));
+    LetterCorner q1(v, QVector2D(0, 0));
 
-    buffer.push_back(corners[1].x());
-    buffer.push_back(corners[1].y());
-    buffer.push_back(0);
+    v = QVector3D(corners[1].x(), corners[1].y(), 0);
+    buffer.push_back(v.x());
+    buffer.push_back(v.y());
+    buffer.push_back(v.z());
 
     buffer.push_back(0);
     buffer.push_back(1);
     buffer.push_back(int(letter-'A'));
+    LetterCorner q2(v, QVector2D(0, 1));
+
+    v = QVector3D(corners[3].x(), corners[3].y(), 0);
+    buffer.push_back(v.x());
+    buffer.push_back(v.y());
+    buffer.push_back(v.z());
+
+    buffer.push_back(1);
+    buffer.push_back(0);
+    buffer.push_back(int(letter-'A'));
+    LetterCorner q3(v, QVector2D(1, 0));
+
 
     buffer.push_back(corners[3].x());
     buffer.push_back(corners[3].y());
@@ -105,15 +126,7 @@ void NameDisplay::addBox(std::vector<float>& buffer, std::vector<QVector2D>& cor
     buffer.push_back(1);
     buffer.push_back(0);
     buffer.push_back(int(letter-'A'));
-
-
-    buffer.push_back(corners[3].x());
-    buffer.push_back(corners[3].y());
-    buffer.push_back(0);
-
-    buffer.push_back(1);
-    buffer.push_back(0);
-    buffer.push_back(int(letter-'A'));
+    LetterCorner q4(v, QVector2D(1, 0));
 
     buffer.push_back(corners[1].x());
     buffer.push_back(corners[1].y());
@@ -122,26 +135,58 @@ void NameDisplay::addBox(std::vector<float>& buffer, std::vector<QVector2D>& cor
     buffer.push_back(0);
     buffer.push_back(1);
     buffer.push_back(int(letter-'A'));
+    LetterCorner q5(q2);
 
-    buffer.push_back(corners[2].x());
-    buffer.push_back(corners[2].y());
-    buffer.push_back(0);
+    v = QVector3D(corners[2].x(), corners[2].y(), 0);
+    buffer.push_back(v.x());
+    buffer.push_back(v.y());
+    buffer.push_back(v.z());
 
     buffer.push_back(1);
     buffer.push_back(1);
     buffer.push_back(int(letter-'A'));
+    LetterCorner q6(v, QVector2D(1, 1));
+
+    LetterQuad quad(q1, q2, q3, q4, q5, q6);
+    letterDisplays[int(letter-'A')]->addQuads(quad);
 
 }
 
-void NameDisplay::setBuffer(const std::vector<float>* vector)
+void NameDisplay::setScale(QVector3D scale)
+{
+    for (int a = 0; a < 26; a++)
+        letterDisplays[a]->getTransform()->setScale(scale);
+}
+
+void NameDisplay::setText(const NamePlacer* region)
+{
+    std::vector<float> buffer;
+
+    for (int a = 0; a < 26; a++)
+        letterDisplays[a]->clearVerticies();
+    for (int a = 0; a < region->getRegionCount(); a++)
+        addRegionToBuffer(region->getRegion(a), buffer);
+    for (int a = 0; a < 26; a++)
+        letterDisplays[a]->setQuads();
+   // setBuffer(&buffer);
+
+}
+
+void NameDisplay::setLetters(std::vector<QOpenGLTexture *> ls)
+{
+    letters = ls;
+    for (int a = 0; a < 26; a++)
+     {
+        letterDisplays[a]->setTexture(ls[a]);
+    }
+}
+
+/*void NameDisplay::setBuffer(const std::vector<float>* vector)
 {
     shader->bind();
-    texture->bind();
     buffer.bind();
     AO.bind();
 
-    int val = shader->uniformLocation("tex");
-    shader->setUniformValue(val, 0);
     buffer.allocate(&(vector->at(0)), vector->size()*sizeof(float));
     shader->enableAttributeArray(0);
     shader->enableAttributeArray(1);
@@ -152,12 +197,11 @@ void NameDisplay::setBuffer(const std::vector<float>* vector)
 
     AO.release();
     buffer.release();
-    texture->release();
     shader->release();
     vCount = vector->size()/6;
-}
+}*/
 
-void NameDisplay::Prerender()
+/*void NameDisplay::Prerender()
 {
     TexturedObject::Prerender();
     for (int a = 0; a < 26; a++)
@@ -170,3 +214,4 @@ void NameDisplay::PostRender()
         letters[a]->release();
     TexturedObject::PostRender();
 }
+*/

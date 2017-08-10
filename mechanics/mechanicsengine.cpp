@@ -2,7 +2,6 @@
 #include <thread>
 #include <QElapsedTimer>
 #include <iostream>
-#include <wait.h>
 #include <chrono>
 #include <algorithm>
 #include "action.h"

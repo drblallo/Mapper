@@ -12,7 +12,7 @@
 using namespace mappergfx;
 using namespace mapreader;
 
-MapGFX::MapGFX(Map& m, float scale, int borderSkip) : map(m)
+MapGFX::MapGFX(Map& m, float scale, int borderSkip) : map(m), areas(QVector2D(map.getTexture()->width()/-2, map.getTexture()->height()/2))
 {
 	ProvincesMask mask(&m);
 	background = new Background(&m, &mask);
@@ -27,6 +27,7 @@ MapGFX::MapGFX(Map& m, float scale, int borderSkip) : map(m)
     background->getTransform()->setScale(map.getTexture()->width(), map.getTexture()->height(),  1);
    // background->getTransform()->setScale(1, 1, 1);
     borders->getTransform()->setScale(1.0f, 1.0f, 1);
+    areas.setScale(getScale());
    // borders->hide(true);
    // background->hide(true);
 }
@@ -37,23 +38,25 @@ MapGFX::~MapGFX()
 	delete borders;
     //if (areas)
     //	delete areas;
-    while (areas.size() != 0)
+    /*while (areas.size() != 0)
     {
         delete areas.back();
         areas.pop_back();
-    }
+    }*/
 }
 
 void MapGFX::scale(const QVector3D& vec)
 {
 	background->getTransform()->scale(vec);
 	borders->getTransform()->scale(vec);
+    areas.setScale(getScale());
 }
 
 void MapGFX::scale(float x, float y, float z)
 {
 	background->getTransform()->scale(x, y, z);
 	borders->getTransform()->scale(x, y, z);
+    areas.setScale(getScale());
 }
 
 void MapGFX::applyMask(ProvincesMask* mask)
@@ -75,31 +78,33 @@ QVector3D MapGFX::getScale() const
 
 void MapGFX::createTexts(const ProvincesMask* mask)
 {
-    QVector2D offset(map.getTexture()->width()/-2, map.getTexture()->height()/2);
+    //QVector2D offset(map.getTexture()->width()/-2, map.getTexture()->height()/2);
     NamePlacer plc(mask);
-	/*ifor (int a = 0; a < plc.getRegionCount(); a++)
-	{
-		std::cout << "-" << plc.getRegion(a)->regionIndexes.size() << std::endl;	
-		for (int b = 0; b < plc.getRegion(a)->regionIndexes.size(); b++)
-		{
-			std::cout << plc.getRegion(a)->regionIndexes[b] << std::endl;
-		}
-	}*/
+    /*if (areas.size() == 0)
+    {
+        areas.push_back(new NameDisplay(&plc, offset));
+        NameDisplay* d(areas.back());
+        d->getTransform()->setTranslation(0, 0, 0.02f);
 
+        d->setScale(getScale());
+
+    }*/
+    //else
+    //{
+        areas.setText(&plc);
+    //}
+/*
     while (areas.size() != 0)
     {
         delete areas.back();
         areas.pop_back();
     }
 
-   // for (int a = 0; a < plc.getRegionCount(); a++)
-    //{
-        areas.push_back(new NameDisplay(&plc, offset));
-        NameDisplay* d(areas.back());
-        d->getTransform()->setTranslation(0, 0, 0.02f);
+    areas.push_back(new NameDisplay(&plc, offset));
+    NameDisplay* d(areas.back());
+    d->getTransform()->setTranslation(0, 0, 0.02f);
 
-        d->getTransform()->setScale(getScale());
-    //}
+    d->getTransform()->setScale(getScale());*/
 }
 
 void MapGFX::setBackgroundInterpolationValue(float value)

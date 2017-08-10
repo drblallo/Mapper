@@ -6,7 +6,7 @@ in float provinceIndex;
 in float otherRegionIndex;
 out vec4 fColor;
 uniform float farPlane;
-uniform vec3 provincesColor[4000];
+uniform vec3 provincesColor[1000];
 
 uniform sampler2D tex;
 void main()
