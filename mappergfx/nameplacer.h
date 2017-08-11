@@ -5,13 +5,15 @@
 
 namespace mappergfx
 {
-	struct ConnectedRegions
+    class ConnectedRegions
 	{
-		std::vector<int> regionIndexes;	
-		QVector2D corners[4];
-        std::vector<QVector2D> edges;
-        std::vector<QVector2D> centers;
-        QString name;
+        public:
+            ConnectedRegions() : name("NO NAME"){}
+            std::vector<int> regionIndexes;
+            QVector2D corners[4];
+            std::vector<QVector2D> edges;
+            std::vector<QVector2D> centers;
+            QString name;
     };
 
 	class ProvincesMask;

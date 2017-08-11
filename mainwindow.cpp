@@ -92,8 +92,11 @@ void MainWindow::exportCurrentView()
     if (!f.exec())
         return;
 
+    QString s(f.selectedFiles()[0]);
+    if (!s.endsWith(".png"))
+        s.append(".png");
 
-    ui->openGLWidget->grabFramebuffer().save(f.selectedFiles()[0]);
+    ui->openGLWidget->grabFramebuffer().save(s);
 }
 
 void MainWindow::changeTextureBackgroudAlpha()
@@ -147,6 +150,7 @@ void MainWindow::loadMap()
     ui->actionLoadColors->setEnabled(true);
     ui->actionLoad_Background->setEnabled(true);
     ui->actionScreen_large_as_image->setEnabled(true);
+    ui->actionLoad_Font->setEnabled(true);
 }
 
 void MainWindow::toggleWidgetCamera()
@@ -246,6 +250,8 @@ void MainWindow::saveColors()
 
 	QString s(f.selectedFiles()[0]);
 
+    if (!s.endsWith(".txt"))
+        s.append(".txt");
 	QFile path(s);
 	if (path.exists())
 		path.remove();
@@ -349,7 +355,7 @@ void MainWindow::updateMap()
     for (unsigned a = 0; a < map->getProvincesList()->size(); a++)
 	{
 		int targetGroup(getUI()->provinceTable->getGroupOfProvince(a));
-		QColor col(getUI()->groupTable->getColorOfGroup(targetGroup ));	
+        QColor col(getUI()->groupTable->getColorOfGroup(targetGroup));
 		mask.setColor(col, int(a));
 	}
 

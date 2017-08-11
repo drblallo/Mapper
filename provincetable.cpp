@@ -30,20 +30,25 @@ void ProvinceTable::modified(QTableWidgetItem* item)
 	int t(0);
 	t = item->text().toInt(&ok);
 
+    if (t < 0)
+       ok =  false;
+
+
 	if (!ok)
 		item->setText("0");
 }
 
-#include <iostream>
 int ProvinceTable::getGroupOfProvince(int index)
 {
-    if (item(index, 0) != NULL )
+    if (item(index, 0) != NULL)
     {
         int t = item(index, 0)->text().toInt();
+        if (t == 0 && index != 0)
+            return 1;
         return t;
     }
     else
     {
-        return 0;
+        return 1;
     }
 }

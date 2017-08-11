@@ -77,7 +77,7 @@ void GroupTable::modified(QTableWidgetItem* item)
 QColor GroupTable::getColorOfGroup(int index)
 {
 	if (rowCount() <= index || index < 0)
-		return QColor(100, 100, 100);
+        return getColorOfGroup(1);
 
 	float r(item(index, 0)->text().toInt());
 	float g(item(index, 1)->text().toInt());

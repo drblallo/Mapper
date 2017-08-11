@@ -43,9 +43,6 @@ void GLWidget::initializeGL()
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glPointSize(1);
 
-  int val;
-  glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &val);
-  std::cout << "max array size " << val << std::endl;
   //resizeGL(111, 11111);
 
    logger = new QOpenGLDebugLogger(this);

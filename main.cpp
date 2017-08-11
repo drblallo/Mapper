@@ -8,6 +8,7 @@
 #include "ui_mainwindow.h"
 #include <QFontDatabase>
 #include <QVector4D>
+#include <QMessageBox>
 
 #include "mappergfx/testsubregionareas.h"
 #include "mappergfx/fonttotexturearray.h"
@@ -32,24 +33,31 @@ int main(int argc, char *argv[])
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
     QFont font(family, 10);
     a.setFont(font);
-    //QCoreApplication::addLibraryPath("./platforms");
-    //QCoreApplication::addLibraryPath("platforms");
-//    QCoreApplication::addLibraryPath("./");
 
 
 
     MainWindow w;
     w.resize(a.desktop()->size().width(), a.desktop()->size().height());
-    //w.resize(2000, 2000);
     w.show();
     QVector4D v(0, 0, 0, 0);
 	w.getUI()->openGLWidget->setClearColor(v);
 
 	renderer::DefaultScene scene;
-//	w.createMap();
+    int val;
+    glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &val);
+    std::cout << "max array size " << val << std::endl;
 
-//	mappergfx::TestSubRegionAreas t(w.getMap(), w.getGraphic()->getScale());
-	
-	//swarm.getTransform()->scale(1, -1, 1);
+    if (val < 1010)
+    {
+        QMessageBox dialog;
+        QString str("The provided version of opengl does only support ");
+        str.append(QString::number(val));
+        str.append(" long unifrom vectors, this software require a lenght of at least 1010. The program will start anyway, but it will not behave properly.\n");
+        str.append("If it does behave properly, please report it.");
+        dialog.setText(str);
+        dialog.exec();
+
+    }
+
     return a.exec();
 }
