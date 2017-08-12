@@ -56,7 +56,7 @@ MapReader::MapReader(QImage& source)
 	cleanSource(source, manipulatedImage);
 	parseSource(manipulatedImage);
 
-	manipulatedImage.save("out.png");
+//	manipulatedImage.save("out.png");
 }
 
 void MapReader::cleanSource(const QImage& image, QImage& manipulated) const

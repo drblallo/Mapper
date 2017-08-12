@@ -31,8 +31,11 @@ Borders::Borders(Map* m, float borderScale, ProvincesMask* mask, int skip) :
         ":/shaders/borders.vert",
         ":/shaders/borders.frag",
         getTexture()
-    ), map(m), vertexCount(3), scale(borderScale), borderSkip(skip)
+    ), map(m), vertexCount(3), scale(borderScale), borderSkip(skip), colorBuffer(QOpenGLBuffer::IndexBuffer)
 {
+    functions.initializeOpenGLFunctions();
+    colorBuffer.create();
+
     setUpData();
     renderState.blending.setEnabled(true);
     renderState.blending.setDestinationAlphaFactor(DestinationBlendingOneMinusAlpha);
@@ -50,11 +53,20 @@ Borders::~Borders()
 
 void Borders::setProvinceMask(ProvincesMask* mask)
 {
+   shader->bind();
+   colorBuffer.bind();
+   colorBuffer.allocate(&(mask->getColors4D()->at(0)), mask->getColors4D()->size()*sizeof(QVector4D));
 
+   int location(functions.glGetUniformBlockIndex(shader->programId(), "PCol"));
+   functions.glBindBufferBase(GL_UNIFORM_BUFFER, location, colorBuffer.bufferId());
+
+   colorBuffer.release();
+   shader->release();
+/*
    shader->bind();
    int location(shader->uniformLocation("provincesColor"));
    shader->setUniformValueArray(location, &(mask->getColors()->at(0)), mask->getColors()->size());
-   shader->release();
+   shader->release();*/
 }
 
 void addVertex(

@@ -1,6 +1,7 @@
 #pragma once
 #include "render/texturedobject.h"
 #include "render/engineobject.h"
+#include <QOpenGLFunctions_3_3_Core>
 
 namespace mapreader
 {
@@ -18,7 +19,7 @@ namespace mappergfx
             Background(mapreader::Map* m, ProvincesMask* mask);
 			virtual ~Background();
 			virtual bool hitted(const QVector3D*, const QVector3D*, QVector3D*) const;
-			virtual int getVertexCount() const {return 6;}
+            virtual int getVertexCount() const;
 			virtual GLenum getRenderMode() const {return GL_TRIANGLES;}
 			void setProvinceMask(ProvincesMask& mask);
             virtual void Update();
@@ -35,10 +36,13 @@ namespace mappergfx
 		protected:
 			virtual void Prerender();
 			virtual void PostRender();
+            void addProvinceQuad(QVector4D color, int id, std::vector<float>& list);
 			mapreader::Map* map;
 			QOpenGLBuffer regionColorBuffer;
 			QOpenGLTexture* backgroundTexture;
             int currSelected;
+            QOpenGLBuffer colorBuffer;
+            QOpenGLFunctions_3_3_Core functions;
 
 	};
 }

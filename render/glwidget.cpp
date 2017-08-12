@@ -41,7 +41,6 @@ void GLWidget::initializeGL()
   glEnable(GL_CULL_FACE);
   //glCullFace(GL_BACK);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glPointSize(1);
 
   //resizeGL(111, 11111);
 

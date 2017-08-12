@@ -9,6 +9,7 @@
 #include "mainwindow.h"
 #include "provincetable.h"
 #include <QMainWindow>
+#include "mapreader/province.h"
 
 using namespace mapreader;
 using namespace mappergfx;
@@ -16,88 +17,19 @@ using namespace renderer;
 Background::Background(Map* m, ProvincesMask* mask) :
     TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getIndexImage())),
     map(m),
-    currSelected(0)
+    currSelected(0),
+    colorBuffer(QOpenGLBuffer::IndexBuffer)
 {
+    functions.initializeOpenGLFunctions();
+    colorBuffer.create();
 	std::vector<float> list;
 
-    list.push_back(-0.5f);
-    list.push_back(0.5f);
-	list.push_back(0);
-	
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-
-	list.push_back(0);
-	list.push_back(0);
-
-
-	
-    list.push_back(-0.5f);
-    list.push_back(-0.5f);
-	list.push_back(0);
-	
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-
-	list.push_back(0);
-	list.push_back(1);
-
-
-    list.push_back(0.5f);
-    list.push_back(0.5f);
-	list.push_back(0);
-	
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-
-	list.push_back(1);
-	list.push_back(0);
-
-
-    list.push_back(0.5f);
-    list.push_back(0.5f);
-	list.push_back(0);
-	
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-
-	list.push_back(1);
-	list.push_back(0);
-
-
-
-    list.push_back(-0.5f);
-    list.push_back(-0.5f);
-	list.push_back(0);
-	
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-
-	list.push_back(0);
-	list.push_back(1);
-
-
-    list.push_back(0.5f);
-    list.push_back(-0.5f);
-	list.push_back(0);
-	
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-	list.push_back(1);
-
-	list.push_back(1);
-	list.push_back(1);
+   // for (unsigned a = 0; a < map->getProvincesList()->size(); a++)
+    //{
+        QRgb c(map->getProvinceFromIndex(0)->getColor());
+        QVector4D v(qRed(c)/255.0f, qGreen(c)/255.0f, qBlue(c)/255.0f, 1);
+        addProvinceQuad(v, 0, list);
+    //}
 
 	setBuffer(&list[0], sizeof(float)*list.size());
 
@@ -125,6 +57,95 @@ Background::Background(Map* m, ProvincesMask* mask) :
     canBeDrawn = true;
 }
 
+int Background::getVertexCount() const
+{
+    return 6;
+}
+
+void Background::addProvinceQuad(QVector4D color, int id, std::vector<float>& list)
+{
+
+    list.push_back(-0.5f);
+    list.push_back(0.5f);
+    list.push_back(0);
+
+    list.push_back(color.x());
+    list.push_back(color.y());
+    list.push_back(color.z());
+    list.push_back(color.w());
+
+    list.push_back(0);
+    list.push_back(0);
+
+
+
+    list.push_back(-0.5f);
+    list.push_back(-0.5f);
+    list.push_back(0);
+
+    list.push_back(color.x());
+    list.push_back(color.y());
+    list.push_back(color.z());
+    list.push_back(color.w());
+
+    list.push_back(0);
+    list.push_back(1);
+
+
+    list.push_back(0.5f);
+    list.push_back(0.5f);
+    list.push_back(0);
+
+    list.push_back(color.x());
+    list.push_back(color.y());
+    list.push_back(color.z());
+    list.push_back(color.w());
+
+    list.push_back(1);
+    list.push_back(0);
+
+
+    list.push_back(0.5f);
+    list.push_back(0.5f);
+    list.push_back(0);
+
+    list.push_back(color.x());
+    list.push_back(color.y());
+    list.push_back(color.z());
+    list.push_back(color.w());
+
+    list.push_back(1);
+    list.push_back(0);
+
+
+
+    list.push_back(-0.5f);
+    list.push_back(-0.5f);
+    list.push_back(0);
+
+    list.push_back(color.x());
+    list.push_back(color.y());
+    list.push_back(color.z());
+    list.push_back(color.w());
+
+    list.push_back(0);
+    list.push_back(1);
+
+
+    list.push_back(0.5f);
+    list.push_back(-0.5f);
+    list.push_back(0);
+
+    list.push_back(color.x());
+    list.push_back(color.y());
+    list.push_back(color.z());
+    list.push_back(color.w());
+
+    list.push_back(1);
+    list.push_back(1);
+
+}
+
 void Background::setBlackSpaceAlpha(float value)
 {
     shader->bind();
@@ -146,18 +167,14 @@ void Background::Update()
 
 void Background::setProvinceMask(ProvincesMask& mask)
 {
-/*	delete texture;
-	texture = Device::createTexture(mask.getImage());
-	shader->bind();
-	texture->bind();
-	AO.bind();
-	AO.release();
-	texture->release();
-	shader->release();
-*/
    shader->bind();
-   int location(shader->uniformLocation("provinceColors"));
-   shader->setUniformValueArray(location, &(mask.getColors()->at(0)), mask.getColors()->size());
+   colorBuffer.bind();
+   colorBuffer.allocate(&(mask.getColors4D()->at(0)), mask.getColors4D()->size()*sizeof(QVector4D));
+
+   int location(functions.glGetUniformBlockIndex(shader->programId(), "PCol"));
+   functions.glBindBufferBase(GL_UNIFORM_BUFFER, location, colorBuffer.bufferId());
+
+   colorBuffer.release();
    shader->release();
 
 }
@@ -168,6 +185,7 @@ Background::~Background()
     delete texture;
 	delete backgroundTexture;
 	regionColorBuffer.destroy();
+    colorBuffer.destroy();
 }
 
 void Background::Prerender()
@@ -233,10 +251,10 @@ void Background::OnMouseDown(QVector3D intersectionPoint)
 	int x((intersectionPoint.x()+0.5f)* map->getTexture()->width());
 	int y((intersectionPoint.y()+0.5f) * map->getTexture()->height());
 	y = map->getTexture()->height() - y;
-	QRgb color = map->getIndexOfPixel(x, y);
-	int index = qRed(color)*255 + qGreen(color);
+    QRgb color = map->getIndexOfPixel(x, y);
+    int index = std::floor(qRed(color)/25.0f) + (std::floor(qGreen(color)/25.0f)*10) + (std::floor(qBlue(color)/25.0f)*100);
 
-//	std::cout << index << std::endl;
+//    std::cout << index << std::endl;
 //
 	//int t = map->getProvinc
 	MainWindow::getMainWindow()->changeProvinceGroupToCurrent(index);

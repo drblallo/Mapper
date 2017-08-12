@@ -133,7 +133,7 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resources.qrc
 
-CONFIG += c++14 debug console
+CONFIG += c++14 release console
 
 DESTDIR =
 

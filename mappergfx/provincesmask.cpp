@@ -13,7 +13,8 @@ ProvincesMask::ProvincesMask(Map* m) : map(m)//, image(m->getTexture()->width(),
 	{
         QColor rgb(m->getProvincesList()->at(a)->getColor());
         provincesColor.push_back(QVector3D(rgb.redF() , rgb.greenF() , rgb.blueF()));
-	}	
+        provinces4DColor.push_back(QVector4D(rgb.redF() , rgb.greenF() , rgb.blueF(), 1));
+    }
 }
 
 
@@ -26,7 +27,10 @@ void ProvincesMask::setColor(QColor col, long id)
 void ProvincesMask::setColor(QColor col, int index)
 {
     if (index < provincesColor.size() && index >= 0)
+    {
         provincesColor[index] = QVector3D(col.redF(), col.greenF(), col.blueF());
+        provinces4DColor[index] = QVector4D(col.redF(), col.greenF(), col.blueF(), 1);
+    }
 }
 
 QRgb ProvincesMask::getColor(long id) const

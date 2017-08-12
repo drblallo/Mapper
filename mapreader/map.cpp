@@ -90,7 +90,13 @@ void Map::setUpRedTexture()
             if (iter != provinces.end())
             {
                 unsigned indx(iter->second->getIndex());
-                modified2[a][b] = QColor(std::floor(indx/255.0f), indx%255, 0).rgb();
+                int blue(std::floor(indx/100.0f) * 25);
+                indx = indx%100;
+
+                int green(std::floor(indx/10.0f) * 25);
+                indx = indx%10;
+
+                modified2[a][b] = QColor(indx * 25, green, blue).rgb();
                 //modified2[a][b] = QColor(0, 255, 0).rgb();
             }
             else

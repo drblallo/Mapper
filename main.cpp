@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 	renderer::DefaultScene scene;
     int val;
-    glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &val);
+    QOpenGLContext::currentContext()->functions()->glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &val);
     std::cout << "max array size " << val << std::endl;
 
     if (val < 1010)

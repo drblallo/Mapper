@@ -1,5 +1,6 @@
 #pragma once
 #include "render/texturedobject.h"
+#include <QOpenGLFunctions_3_3_Core>
 
 namespace mapreader
 {
@@ -29,6 +30,8 @@ namespace mappergfx
             int vertexCount;
 			float scale;
             int borderSkip;
+            QOpenGLBuffer colorBuffer;
+            QOpenGLFunctions_3_3_Core functions;
 
     };
 }
