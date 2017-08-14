@@ -35,7 +35,6 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
     //#####           Methods            #####
     //########################################
         void initializeGL();
-        void resizeGL(int width, int height);
         void paintGL();
         void teardownGL();
 		void setClearColor(QVector4D color);
@@ -54,6 +53,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         virtual void update();
 
     private:
+        virtual void resizeGL(int width, int height);
         void sortRenderObjects();
         void applyRenderState(const renderer::RenderState* renderState);
         void applyBlending(const renderer::RenderState* renderState);
@@ -66,6 +66,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
         void keyReleaseEvent(QKeyEvent *event);
         void mousePressEvent(QMouseEvent *event);
         void mouseReleaseEvent(QMouseEvent *event);
+        void wheelEvent(QWheelEvent *event);
         QMatrix4x4 m_projection;
         Camera3D m_camera;
         renderer::Scene* scene;

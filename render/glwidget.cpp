@@ -93,7 +93,9 @@ void GLWidget::update()
 void GLWidget::resizeGL(int width, int height)
 {
     m_projection.setToIdentity();
-    m_projection.perspective(45.0f,float(width) / float(height), 1.0f, farPlane);
+    //m_projection.perspective(45.0f,float(width) / float(height), 1.0f, farPlane);
+    //m_projection.perspective(90.0f,float(width) / float(height), 1.0f, farPlane);
+    m_projection.frustum(-1, 1, -1*float(height)/float(width), float(height)/float(width), 1.0f, farPlane);
 }
 
 void GLWidget::paintGL()
@@ -382,4 +384,9 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
   Input::registerMouseRelease(event->button());
+}
+
+void GLWidget::wheelEvent(QWheelEvent *event)
+{
+    Input::wheelEvent(event);
 }

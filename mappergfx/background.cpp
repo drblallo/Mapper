@@ -193,6 +193,7 @@ void Background::Prerender()
 	TexturedObject::Prerender();	
 	backgroundTexture->bind(1);
 
+
     shader->setUniformValue("selected", currSelected);
 }
 

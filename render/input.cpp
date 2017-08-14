@@ -20,6 +20,9 @@ struct InputInstance : std::pair<T, Input::InputState>
   }
 };
 
+int Input::wheelDelta(0);
+bool Input::updatedWheel(false);
+
 // Instance types
 typedef InputInstance<Qt::Key> KeyInstance;
 typedef InputInstance<Qt::MouseButton> ButtonInstance;
@@ -118,6 +121,10 @@ QPoint Input::mouseDelta()
 
 void Input::update()
 {
+    if (!updatedWheel)
+        wheelDelta = 0;
+    updatedWheel = false;
+
   // Update Mouse Delta
   sg_mousePrevPosition = sg_mouseCurrPosition;
   sg_mouseCurrPosition = QCursor::pos();
@@ -168,6 +175,13 @@ void Input::reset()
 {
   sg_keyInstances.clear();
   sg_buttonInstances.clear();
+  wheelDelta = 0;
+}
+
+bool Input::wheelEvent(QWheelEvent* event)
+{
+    updatedWheel = true;
+    wheelDelta = event->delta();
 }
 
 

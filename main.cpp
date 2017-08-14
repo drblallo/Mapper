@@ -43,21 +43,6 @@ int main(int argc, char *argv[])
 	w.getUI()->openGLWidget->setClearColor(v);
 
 	renderer::DefaultScene scene;
-    int val;
-    QOpenGLContext::currentContext()->functions()->glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &val);
-    std::cout << "max array size " << val << std::endl;
-
-    if (val < 1010)
-    {
-        QMessageBox dialog;
-        QString str("The provided version of opengl does only support ");
-        str.append(QString::number(val));
-        str.append(" long unifrom vectors, this software require a lenght of at least 1010. The program will start anyway, but it will not behave properly.\n");
-        str.append("If it does behave properly, please report it.");
-        dialog.setText(str);
-        dialog.exec();
-
-    }
 
     return a.exec();
 }

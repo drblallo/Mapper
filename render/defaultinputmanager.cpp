@@ -27,49 +27,48 @@ void DefaultInputManager::Update()
 {
 
     Camera3D *m_camera(Device::getGraphicWindow()->getCamera());
-    // Camera Transformation
-    if (Input::buttonPressed(Qt::RightButton))
-    {
       static const float transSpeed = 0.5f;
       static const float rotSpeed   = 0.5f;
 
+    // Camera Transformation
+    if (Input::buttonPressed(Qt::RightButton))
+    {
       // Handle rotations
       m_camera->rotate(-rotSpeed * Input::mouseDelta().x(), Camera3D::LocalUp);
       m_camera->rotate(-rotSpeed * Input::mouseDelta().y(), m_camera->right());
 
-      // Handle translations
-      QVector3D translation;
-      if (Input::keyPressed(Qt::Key_W))
-    {
-        translation += m_camera->forward();
-      }
-      if (Input::keyPressed(Qt::Key_S))
-      {
-        translation -= m_camera->forward();
-      }
-      if (Input::keyPressed(Qt::Key_A))
-      {
-        translation -= m_camera->right();
-      }
-      if (Input::keyPressed(Qt::Key_D))
-      {
-        translation += m_camera->right();
-      }
-      if (Input::keyPressed(Qt::Key_Q))
-      {
-        translation -= m_camera->up();
-      }
-      if (Input::keyPressed(Qt::Key_E))
-      {
-        translation += m_camera->up();
-      }
-      m_camera->translate(transSpeed * translation);
     }
 
-    //if (Input::keyReleased(Qt::Key_P))
-    //{
-//		Device::getGraphicWindow()->grabFramebuffer().save(QString("out.png"));
-    //}
+      // Handle translations
+    QVector3D translation;
+    if (Input::keyPressed(Qt::Key_W))
+    {
+        translation += QVector3D(0, 1, 0);
+    }
+    if (Input::keyPressed(Qt::Key_S))
+    {
+        translation += QVector3D(0, -1, 0);
+    }
+    if (Input::keyPressed(Qt::Key_A))
+    {
+        translation += QVector3D(-1, 0, 0);
+    }
+    if (Input::keyPressed(Qt::Key_D))
+    {
+        translation += QVector3D(1, 0, 0);
+    }
+    if (Input::keyPressed(Qt::Key_Q) || Input::wheelScrool() <= -1)
+    {
+        translation += QVector3D(0, 0, 1);
+        translation += QVector3D(0, 0, -0.01) * Input::wheelScrool();
+    }
+    if (Input::keyPressed(Qt::Key_E) || Input::wheelScrool() >= 1)
+    {
+        translation += QVector3D(0, 0, -1);
+        translation += QVector3D(0, 0, -0.01) * Input::wheelScrool();
+    }
+    m_camera->translate(transSpeed * translation);
+
 	if (Input::keyReleased(Qt::Key_N))
 	{
 		QVector3D v(Device::getGraphicWindow()->getCamera()->translation());

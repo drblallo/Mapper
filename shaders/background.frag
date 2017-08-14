@@ -22,9 +22,9 @@ vec4 lerpRGB(vec4 a, vec4 b, float t)
 
 int indexFromColor(vec3 col)
 {
-    int r = int(floor((col.r*255.0)/25.0));
-    int g = int(floor((col.g*255.0)/25.0))*10;
-    int b = int(floor((col.b*255.0)/25.0))*100;
+    int r = int(round((col.r*255.0)/25.0));
+    int g = int(round((col.g*255.0)/25.0))*10;
+    int b = int(round((col.b*255.0)/25.0))*100;
     return  r + g + b;
 }
 

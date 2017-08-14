@@ -3,6 +3,7 @@
 
 #include <Qt>
 #include <QPoint>
+#include <QWheelEvent>
 
 class Input
 {
@@ -31,6 +32,7 @@ public:
   static QPoint mousePosition();
   static QPoint mouseDelta();
   static QPoint mouseScreenPosition();
+  static int wheelScrool() {return wheelDelta;}
 
 private:
 
@@ -40,7 +42,10 @@ private:
   static void registerKeyRelease(int key);
   static void registerMousePress(Qt::MouseButton button);
   static void registerMouseRelease(Qt::MouseButton button);
+  static bool wheelEvent(QWheelEvent* event);
   static void reset();
+  static int wheelDelta;
+  static bool updatedWheel;
   friend class GLWidget;
 };
 
