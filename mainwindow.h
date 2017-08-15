@@ -30,6 +30,7 @@ public:
     void lockUpdate(){updateBlocker++;}
     void unlockUpdate(){updateBlocker--;}
     void loadBackground();
+    void loadBlackImage();
     void loadMap();
     void loadFont();
     void resetCameraPosition();

@@ -12,6 +12,7 @@
 
 #include "mappergfx/testsubregionareas.h"
 #include "mappergfx/fonttotexturearray.h"
+#include "mapreader/whitemaptoprovincemap.h"
 
 int main(int argc, char *argv[])
 {

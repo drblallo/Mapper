@@ -59,7 +59,9 @@ SOURCES += main.cpp\
 	grouptable.cpp \
     mappergfx/namedisplay.cpp \
     mappergfx/fonttotexturearray.cpp \
-    mappergfx/letterdisplay.cpp
+    mappergfx/letterdisplay.cpp \
+    mapreader/whitemaptoprovincemap.cpp \
+    blackmaploaderdialog.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -122,13 +124,16 @@ HEADERS  += mainwindow.h \
 	grouptable.h \
     mappergfx/namedisplay.h \
     mappergfx/fonttotexturearray.h \
-    mappergfx/letterdisplay.h
+    mappergfx/letterdisplay.h \
+    mapreader/whitemaptoprovincemap.h \
+    blackmaploaderdialog.h
 
 FORMS    += mainwindow.ui \
     mechanics/Widgets/stockpileentitywidget.ui \
     mechanics/Widgets/characteristicentitywidget.ui \
     mechanics/Widgets/actionentitywidget.ui \
-    mechanics/Widgets/dialogentity.ui
+    mechanics/Widgets/dialogentity.ui \
+    blackmaploaderdialog.ui
 
 RESOURCES += \
     resources.qrc

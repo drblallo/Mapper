@@ -293,6 +293,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionLoad_Black_Map"/>
     <addaction name="actionLoad_Map"/>
     <addaction name="separator"/>
     <addaction name="actionSaveColors"/>
@@ -382,6 +383,11 @@
   <action name="actionExport">
    <property name="text">
     <string>Export PNG</string>
+   </property>
+  </action>
+  <action name="actionLoad_Black_Map">
+   <property name="text">
+    <string>Load Black Map</string>
    </property>
   </action>
  </widget>

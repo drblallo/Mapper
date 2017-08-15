@@ -7,6 +7,8 @@
 #include <QFileDialog>
 #include "mappergfx/fonttotexturearray.h"
 #include "mappergfx/namedisplay.h"
+#include "blackmaploaderdialog.h"
+#include "mapreader/whitemaptoprovincemap.h"
 
 
 using namespace mappergfx;
@@ -65,6 +67,10 @@ void MainWindow::startUI()
 
     connect(ui->actionScreen_large_as_image, &QAction::toggled, this, &MainWindow::toggleWidgetCamera);
 
+    connect(ui->actionLoad_Black_Map, &QAction::triggered, this, &MainWindow::lockUpdate);
+    connect(ui->actionLoad_Black_Map, &QAction::triggered, this, &MainWindow::loadBlackImage);
+    connect(ui->actionLoad_Black_Map, &QAction::triggered, this, &MainWindow::unlockUpdate);
+
 
     connect(ui->borderSkip, static_cast<void (QSpinBox::*) (int)> (&QSpinBox::valueChanged), this, &MainWindow::reloadBorders);
     connect(ui->borderWidth, static_cast<void (QDoubleSpinBox::*) (double)> (&QDoubleSpinBox::valueChanged), this, &MainWindow::reloadBorders);
@@ -77,6 +83,23 @@ void MainWindow::startUI()
     connect(ui->textureInterpolation, static_cast<void (QDoubleSpinBox::*) (double)> (&QDoubleSpinBox::valueChanged), this, &MainWindow::changeTextureInterpolation);
 
     connect(ui->actionExport, &QAction::triggered, this, &MainWindow::exportCurrentView);
+}
+
+void MainWindow::loadBlackImage()
+{
+    BlackMapLoaderDialog dialog;
+
+    if (!dialog.exec() || dialog.getOutput().length() == 0)
+        return;
+
+    QFile path(dialog.getInput());
+    if (!path.exists())
+        return;
+
+    QImage image(dialog.getInput());
+    mapreader::WhiteMapToProvinceMap::createRegionMapFromWhiteMap(image, dialog.getProvinceCount());
+    image.save(dialog.getOutput());
+    createMap(dialog.getOutput());
 }
 
 void MainWindow::exportCurrentView()
@@ -146,11 +169,6 @@ void MainWindow::loadMap()
         return;
 
     createMap(f.selectedFiles()[0]);
-    ui->actionSaveColors->setEnabled(true);
-    ui->actionLoadColors->setEnabled(true);
-    ui->actionLoad_Background->setEnabled(true);
-    ui->actionScreen_large_as_image->setEnabled(true);
-    ui->actionLoad_Font->setEnabled(true);
 }
 
 void MainWindow::toggleWidgetCamera()
@@ -214,6 +232,12 @@ void MainWindow::createMap(QString path)
     getUI()->groupTable->populate(map);
     //getUI()->openGLWidget->setMinimumSize(map.getTexture()->width(), map.getTexture()->height());
     resetCameraPosition();
+
+    ui->actionSaveColors->setEnabled(true);
+    ui->actionLoadColors->setEnabled(true);
+    ui->actionLoad_Background->setEnabled(true);
+    ui->actionScreen_large_as_image->setEnabled(true);
+    ui->actionLoad_Font->setEnabled(true);
 }
 
 void MainWindow::loadBackground()
