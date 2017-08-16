@@ -2,11 +2,12 @@
 #include "mappergfx/provincesmask.h"
 #include "mapreader/map.h"
 #include <QHeaderView>
+#include <chrono>
 
 using namespace mapreader;
 using namespace mappergfx;
 
-GroupTable::GroupTable(QWidget* w) : QTableWidget(w)
+GroupTable::GroupTable(QWidget* w) : QTableWidget(w), generator(std::chrono::system_clock::now().time_since_epoch().count())
 {
 	connect(this, &QTableWidget::itemChanged, this, &GroupTable::modified);
 }
@@ -104,10 +105,16 @@ void GroupTable::deleteLast()
 
 void GroupTable::createRow()
 {
+    if (rowCount() == 0)
+        return;
+    std::uniform_int_distribution<int> dist(1, 255);
 	setRowCount(rowCount() + 1);	
-	setItem(rowCount() - 1, 0, new QTableWidgetItem("255"));
-	setItem(rowCount() - 1, 1, new QTableWidgetItem("255"));
-	setItem(rowCount() - 1, 2, new QTableWidgetItem("255"));
+    QColor col(dist(generator), dist(generator), dist(generator));
+    setItem(rowCount() - 1, 0, new QTableWidgetItem(QString::number(col.red())));
+    setItem(rowCount() - 1, 1, new QTableWidgetItem(QString::number(col.green())));
+    setItem(rowCount() - 1, 2, new QTableWidgetItem(QString::number(col.blue())));
 	setItem(rowCount() - 1, 3, new QTableWidgetItem(""));
+    item(rowCount() - 1, 3)->setBackgroundColor(col);
     setItem(rowCount() - 1, 4, new QTableWidgetItem("NEW TEXT"));
+    selectRow(rowCount() - 1);
 }

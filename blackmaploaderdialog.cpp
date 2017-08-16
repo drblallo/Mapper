@@ -21,10 +21,8 @@ void BlackMapLoaderDialog::startUI()
     connect(ui->inputLineButton, &QPushButton::pressed, this, &BlackMapLoaderDialog::selectInputLine);
 }
 
-#include <iostream>
 void BlackMapLoaderDialog::selectInputLine()
 {
-    std::cout << "called" << std::endl;
     QFileDialog f(this, tr("Load Map"));
 
     f.setFileMode(QFileDialog::ExistingFile);
@@ -51,8 +49,11 @@ void BlackMapLoaderDialog::selectOutputLine()
     if (!f.exec())
         return;
 
-    ui->outPutLineOutput->setText(f.selectedFiles()[0]);
+    QString s(f.selectedFiles()[0]);
+    if (!s.endsWith(".png"))
+        s.append(".png");
 
+    ui->outPutLineOutput->setText(s);
 }
 
 QString BlackMapLoaderDialog::getOutput()

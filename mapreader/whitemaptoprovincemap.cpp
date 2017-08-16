@@ -19,6 +19,7 @@ bool WhiteMapToProvinceMap::isWhite(QRgb& rgb)
     return false;
 }
 
+#include <iostream>
 void WhiteMapToProvinceMap::createRegionMapFromWhiteMap(QImage& out, int provinceCount)
 {
 
@@ -47,22 +48,44 @@ void WhiteMapToProvinceMap::createRegionMapFromWhiteMap(QImage& out, int provinc
                 whiteCount++;
             }
         }
+    for (int a = 0; a < out.height(); a++)
+    {
+        if (outLines[a][0] != black)
+        {
+            outLines[a][0] = black;
+            whiteCount--;
+        }
+        if (outLines[a][out.width()-1] != black)
+        {
+            outLines[a][out.width()-1] = black;
+            whiteCount--;
+        }
+    }
+    for (int a = 0; a < out.width(); a++)
+    {
+        if (outLines[0][a] != black)
+        {
+            outLines[0][a] = black;
+            whiteCount--;
+        }
+        if (outLines[out.height()-1][a] != black)
+        {
+            outLines[out.height()-1][a] = black;
+            whiteCount--;
+        }
+    }
 
     for (int a = 0; a < out.height(); a++)
     {
-        outLines[a][0] = black;
-        outLines[a][out.width()-1] = black;
         markAllConnectedNeightbours(0, a, outLines, out, black, blue);
         markAllConnectedNeightbours(out.width() - 1, a, outLines, out, black, blue);
     }
     for (int a = 0; a < out.width(); a++)
     {
-        outLines[0][a] = black;
-        outLines[out.height()-1][a] = black;
         markAllConnectedNeightbours(a, 0, outLines, out, black, blue);
         markAllConnectedNeightbours(a, out.height() - 1, outLines, out, black, blue);
     }
-
+    std::cout << "here" << std::endl;
     std::vector<std::pair<int, int> > provinceCenters;
     for (int a = 0; a < provinceCount; a++)
     {
@@ -76,8 +99,9 @@ void WhiteMapToProvinceMap::createRegionMapFromWhiteMap(QImage& out, int provinc
     if (provinceCenters.size() == 0)
         return;
 
+    std::cout << "here" << std::endl;
     int size(1);
-    while (whiteCount > 0 && size < out.width())
+    while (whiteCount > 0 && size < 1000)
     {
         for (unsigned a = 0; a < provinceCenters.size(); a++)
         {
@@ -85,7 +109,9 @@ void WhiteMapToProvinceMap::createRegionMapFromWhiteMap(QImage& out, int provinc
             enlarge(&whiteCount, p.first, p.second, outLines, out,size, outLines[p.second][p.first]);
         }
             size++;
+
     }
+    std::cout << "here" << std::endl;
     for (int a = 0; a < out.width(); a++)
     {
         for (int b = 0; b < out.height(); b++)
@@ -94,6 +120,7 @@ void WhiteMapToProvinceMap::createRegionMapFromWhiteMap(QImage& out, int provinc
                  parseFullySourdondedArea(a, b, outLines, out, black, blue);
         }
     }
+    std::cout << "here" << std::endl;
     for (int a = 0; a < out.width(); a++)
         for (int b = 0; b < out.height(); b++)
         {

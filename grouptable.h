@@ -1,6 +1,7 @@
 #pragma once
 #include <QTableWidget>
 #include <QColor>
+#include <random>
 
 namespace mappergfx
 {
@@ -22,6 +23,9 @@ class GroupTable : public QTableWidget
         QString getNameOfGroup(int index);
         void deleteLast();
 		void createRow();
+
+    private:
+        std::default_random_engine generator;
 
 	public slots:
 		void modified(QTableWidgetItem* item);
