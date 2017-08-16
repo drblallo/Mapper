@@ -41,6 +41,8 @@ public:
     void changeTextureBackgroudAlpha();
     void changeTextureInterpolation();
     void exportCurrentView();
+    void createMapInOtherThread(QString path);
+    void loadBlackImageInAnotherThread(QString path, QString output, int provinceCount, bool* ended);
     mapreader::Map* getMap() {return map;}
 	mappergfx::MapGFX* getGraphic(){return graphic;}
 

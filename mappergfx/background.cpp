@@ -15,7 +15,7 @@ using namespace mapreader;
 using namespace mappergfx;
 using namespace renderer;
 Background::Background(Map* m, ProvincesMask* mask) :
-    TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getIndexImage())),
+    TexturedObject(":/shaders/background.vert", ":/shaders/background.frag", Device::createTexture(m->getIndexImage(), QOpenGLTexture::DontGenerateMipMaps)),
     map(m),
     currSelected(0),
     colorBuffer(QOpenGLBuffer::IndexBuffer)
@@ -27,7 +27,7 @@ Background::Background(Map* m, ProvincesMask* mask) :
    // for (unsigned a = 0; a < map->getProvincesList()->size(); a++)
     //{
         QRgb c(map->getProvinceFromIndex(0)->getColor());
-        QVector4D v(qRed(c)/255.0f, qGreen(c)/255.0f, qBlue(c)/255.0f, 1);
+        QVector4D v(1, 1, 1, 1);
         addProvinceQuad(v, 0, list);
     //}
 

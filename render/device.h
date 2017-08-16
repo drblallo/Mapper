@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
 #include <QOpenGLBuffer>
+#include <QOpenGLTexture>
 
 class GLWidget;
 class QOpenGLShaderProgram;
-class QOpenGLTexture;
 class QImage;
 namespace renderer
 {
@@ -20,7 +20,7 @@ namespace renderer
             static QOpenGLShaderProgram* createProgram(const std::string& vertex,const std::string& fragment);
             inline static void setGraphicWindow(GLWidget* wid){GraphicWindow = wid;}
             static QOpenGLTexture* createTexture(const std::string* textureName);
-			static QOpenGLTexture* createTexture(const QImage *texture);
+            static QOpenGLTexture* createTexture(const QImage *texture, QOpenGLTexture::MipMapGeneration genMipMaps = QOpenGLTexture::GenerateMipMaps);
 
         private:
         //########################################

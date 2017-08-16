@@ -128,7 +128,34 @@ void WhiteMapToProvinceMap::createRegionMapFromWhiteMap(QImage& out, int provinc
                 outLines[b][a] = black;
         }
 
+    finalFix(outLines, out);
 
+}
+
+void WhiteMapToProvinceMap::finalFix(std::vector<QRgb *> &outLines, QImage &source)
+{
+    QColor v(QColor(255, 255, 255));
+    QRgb white(v.rgb());
+    QColor b(QColor(0, 0, 0));
+    QRgb black(b.rgb());
+
+    QImage supp(source.size(), source.format());
+    std::vector<QRgb*> suppLines(source.height());
+    for (int a = 0; a < supp.height(); a++)
+        suppLines[a] = (QRgb*)supp.scanLine(a);
+
+    for (int a = 0; a < source.width(); a++)
+        for (int b = 0; b < source.height(); b++)
+            suppLines[b][a] = white;
+
+    for (int a = 0; a < supp.width(); a++)
+    {
+        for (int b = 0; b < source.height(); b++)
+        {
+            if (outLines[b][a] != black && suppLines[b][a] != black)
+                 removeInscribedElements(a, b, outLines, source, black, suppLines);
+        }
+    }
 }
 
 void WhiteMapToProvinceMap::enlarge(int* modifiedProvinces, int x0, int y0, std::vector<QRgb*>& outLines, QImage& source, int radius, QRgb target)
@@ -173,7 +200,7 @@ QRgb indexToCol(int index)
     int green(index/10);
     green = green * 25;
     index = index %10;
-    return QColor(red, green, index).rgb();
+    return QColor(red, green, index*25).rgb();
 }
 
 std::pair<int, int> WhiteMapToProvinceMap::tryPlaceProvince(int index, std::vector<QRgb*>& outLines, QImage& source,std::default_random_engine& generator)
@@ -298,4 +325,123 @@ bool WhiteMapToProvinceMap::parseFullySourdondedArea(int x,int y,std::vector<QRg
     if (!areaIsTouchingMultipleColors)
         markAllConnectedNeightbours(x, y, sourceLines, source, sourceColor, oneNeighbourColor);
 
+}
+
+
+void WhiteMapToProvinceMap::parsePixel(
+        int x,
+        int y,
+        std::stack<MarkingData>& stack,
+        bool* startingCOlor,
+        QRgb black,
+        QRgb blue,
+        QRgb areaColor,
+        bool* foundOne,
+        bool* areaIsTouchingMultipleColors,
+        QRgb* oneNeighbourColor,
+        std::vector<QRgb*>& sourceLines,
+        QImage& source
+        )
+{
+
+    if (isInBound(x, y, source))
+    {
+        if (sourceLines[y][x] == black)
+            *areaIsTouchingMultipleColors = true;
+        if (sourceLines[y][x] == areaColor)
+        {
+            stack.push(MarkingData(x, y));
+            *foundOne = true;
+        }
+        else
+        {
+            if (sourceLines[y][x] != blue)
+            {
+                if (*startingCOlor)
+                {
+                    *startingCOlor = false;
+                    *oneNeighbourColor = sourceLines[y][x];
+                }
+                else
+                {
+                    if (*oneNeighbourColor != sourceLines[y][x])
+                        *areaIsTouchingMultipleColors = true;
+                }
+            }
+        }
+    }
+    else
+    {
+        *areaIsTouchingMultipleColors = true;
+    }
+}
+
+
+void WhiteMapToProvinceMap::removeInscribedElements(
+        int x,
+        int y,
+        std::vector<QRgb*>& sourceLines,
+        QImage& source,
+        QRgb black,
+        std::vector<QRgb*>& suppLines
+        )
+{
+    QRgb oneNeighbourColor;
+    bool startingCOlor(true);
+    QRgb areaColor(sourceLines[y][x]);
+    QRgb blue(QColor(0, 0, 255).rgb());
+
+    std::stack<MarkingData> stack;
+    sourceLines[y][x] = blue;
+    suppLines[y][x] = black;
+    stack.push(MarkingData(x, y));
+
+    bool areaIsTouchingMultipleColors(false);
+
+    while (!stack.empty())
+    {
+        bool foundOne(false);
+        MarkingData data(stack.top());
+        sourceLines[data.y][data.x] = blue;
+        suppLines[data.y][data.x] = black;
+        for (int a = -1; a <= 1 && !foundOne; a++)
+        {
+                parsePixel(
+                            data.x+a,
+                            data.y,
+                            stack,
+                            &startingCOlor,
+                            black,
+                            blue,
+                            areaColor,
+                            &foundOne,
+                            &areaIsTouchingMultipleColors,
+                            &oneNeighbourColor,
+                            sourceLines, source
+                            );
+        }
+            for (int b = -1; b <= 1 && !foundOne; b++)
+            {
+                parsePixel(
+                            data.x,
+                            data.y+b,
+                            stack,
+                            &startingCOlor,
+                            black,
+                            blue,
+                            areaColor,
+                            &foundOne,
+                            &areaIsTouchingMultipleColors,
+                            &oneNeighbourColor,
+                            sourceLines, source
+                            );
+            }
+        if (!foundOne)
+            stack.pop();
+    }
+
+    if (!areaIsTouchingMultipleColors)
+        markAllConnectedNeightbours(x, y, sourceLines, source, blue, oneNeighbourColor);
+    else
+        markAllConnectedNeightbours(x, y, sourceLines, source, blue, areaColor);
 }

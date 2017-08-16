@@ -9,7 +9,8 @@
 #include "mappergfx/namedisplay.h"
 #include "blackmaploaderdialog.h"
 #include "mapreader/whitemaptoprovincemap.h"
-
+#include <QProgressDialog>
+#include <thread>
 
 using namespace mappergfx;
 using namespace mapreader;
@@ -85,6 +86,15 @@ void MainWindow::startUI()
     connect(ui->actionExport, &QAction::triggered, this, &MainWindow::exportCurrentView);
 }
 
+void MainWindow::loadBlackImageInAnotherThread(QString path, QString output, int provinceCount, bool* ended)
+{
+
+    QImage image(path);
+    mapreader::WhiteMapToProvinceMap::createRegionMapFromWhiteMap(image, provinceCount);
+    image.save(output);
+    *ended = true;
+}
+
 void MainWindow::loadBlackImage()
 {
     BlackMapLoaderDialog dialog;
@@ -96,9 +106,25 @@ void MainWindow::loadBlackImage()
     if (!path.exists())
         return;
 
-    QImage image(dialog.getInput());
-    mapreader::WhiteMapToProvinceMap::createRegionMapFromWhiteMap(image, dialog.getProvinceCount());
-    image.save(dialog.getOutput());
+
+    bool ended = false;
+    std::thread th(std::bind(&MainWindow::loadBlackImageInAnotherThread, this, dialog.getInput(),dialog.getOutput(), dialog.getProvinceCount(), &ended));
+    th.detach();
+    QProgressDialog progress("Splitting Map into provinces, could take a while", "cancel", 0, 0, this);
+   // progress.setCancelButton(0);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.show();
+    //progress.setValue(0);
+
+    QEventLoop lp;
+    while (!ended)
+    {
+        lp.processEvents();
+        if (progress.wasCanceled())
+            return;
+    }
+    progress.hide();
+
     createMap(dialog.getOutput());
 }
 
@@ -169,6 +195,7 @@ void MainWindow::loadMap()
         return;
 
     createMap(f.selectedFiles()[0]);
+
 }
 
 void MainWindow::toggleWidgetCamera()
@@ -216,15 +243,37 @@ void MainWindow::provinceSelectedChanged(int cRow, int, int, int)
     graphic->setCurrentSelected(cRow);
 }
 
+void MainWindow::createMapInOtherThread(QString path)
+{
+    map = new Map(path);
+}
+
 void MainWindow::createMap(QString path)
 {
     if (graphic)
         delete graphic;
     if (map)
         delete map;
-    map = new Map(path);
-    graphic = new MapGFX(*map, 5, 9);
+    map = NULL;
+    std::thread th(std::bind(&MainWindow::createMapInOtherThread, this, path));
+    th.detach();
+    QProgressDialog progress("parsing splitted map, could take a while", "cancel", 0, 0, this);
+    //progress.setCancelButton(0);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.show();
+    //progress.setValue(0);
 
+    QEventLoop lp;
+    while (!map)
+    {
+        lp.processEvents();
+        if (progress.wasCanceled())
+            return;
+    }
+
+
+
+    graphic = new MapGFX(*map, 5, 9);
     float scale(100.0f/map->getTexture()->width());
 
     graphic->scale(scale, scale, 10);

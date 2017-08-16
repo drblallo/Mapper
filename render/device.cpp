@@ -48,7 +48,8 @@ QOpenGLTexture* Device::createTexture(const std::string *textureName)
     return new QOpenGLTexture(QImage(textureName->c_str()).mirrored());
 }
 
-QOpenGLTexture* Device::createTexture(const QImage *texture)
+QOpenGLTexture* Device::createTexture(const QImage *texture, QOpenGLTexture::MipMapGeneration genMipMaps )
 {
-    return new QOpenGLTexture(*texture);
+    return new QOpenGLTexture(*texture, genMipMaps);
 }
+

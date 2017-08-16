@@ -36,12 +36,15 @@ int main(int argc, char *argv[])
     a.setFont(font);
 
 
-
     MainWindow w;
     w.resize(a.desktop()->size().width(), a.desktop()->size().height());
     w.show();
     QVector4D v(0, 0, 0, 0);
 	w.getUI()->openGLWidget->setClearColor(v);
+
+    GLint texSize;
+    QOpenGLContext::currentContext()->functions()->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
+    std::cout << "maximum texture size supported is " << texSize << "X" << texSize << std::endl;
 
 	renderer::DefaultScene scene;
 
