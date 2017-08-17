@@ -5,13 +5,16 @@
 #include "mappergfx/mapgfx.h"
 #include "mapreader/map.h"
 #include <QOpenGLTexture>
+#include <thread>
+#include <mutex>
+#include "interfaces/stringnotifiable.h"
 
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public StringNotifiable
 {
     Q_OBJECT
 
@@ -43,6 +46,8 @@ public:
     void exportCurrentView();
     void createMapInOtherThread(QString path);
     void loadBlackImageInAnotherThread(QString path, QString output, int provinceCount, bool* ended);
+    virtual void setNotifyText(QString info);
+    virtual QString getNotifyText();
     mapreader::Map* getMap() {return map;}
 	mappergfx::MapGFX* getGraphic(){return graphic;}
 
@@ -56,6 +61,8 @@ private:
     std::vector<QOpenGLTexture*> textTexture;
     int updateBlocker;
     QSize currentSize;
+    QString operationInfo;
+    std::mutex mutex;
 
 protected:
     virtual void update();

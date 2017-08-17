@@ -61,7 +61,8 @@ SOURCES += main.cpp\
     mappergfx/fonttotexturearray.cpp \
     mappergfx/letterdisplay.cpp \
     mapreader/whitemaptoprovincemap.cpp \
-    blackmaploaderdialog.cpp
+    blackmaploaderdialog.cpp \
+    interfaces/stringnotifiable.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -126,7 +127,8 @@ HEADERS  += mainwindow.h \
     mappergfx/fonttotexturearray.h \
     mappergfx/letterdisplay.h \
     mapreader/whitemaptoprovincemap.h \
-    blackmaploaderdialog.h
+    blackmaploaderdialog.h \
+    interfaces/stringnotifiable.h
 
 FORMS    += mainwindow.ui \
     mechanics/Widgets/stockpileentitywidget.ui \
@@ -138,7 +140,7 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resources.qrc
 
-CONFIG += c++14 release console
+CONFIG += c++14 debug console
 
 DESTDIR =
 

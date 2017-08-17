@@ -1,9 +1,12 @@
 #pragma once
 #include <QImage>
 #include <stack>
+#include <random>
+#include "interfaces/stringnotifiable.h"
 
 namespace mapreader
 {
+    //Utility class used to keep track of which element are visited in the map
     class MarkingData
     {
         public:
@@ -12,45 +15,86 @@ namespace mapreader
             MarkingData& operator=(const MarkingData& other) {x = other.x; y = other.y; return *this;}
             int x, y;
     };
+
+    //Utility class used to not call image.width() every second.
+    class MapInfo
+    {
+        public:
+            MapInfo(QImage& in) : sourceLines(in.height()), width(in.width()), height(in.height()), image(in)
+            {
+                for (int a = 0; a < image.height(); a++)
+                    sourceLines[a] = (QRgb*)image.scanLine(a);
+            }
+
+            std::vector<QRgb*> sourceLines;
+            int width;
+            int height;
+            QImage& image;
+    };
+
+    //utility class used to transfer data across functions.
+    class InscribedRemovalData
+    {
+    public:
+        QRgb oneNeighbourColor;
+        bool fondZeroNeighbour;
+        QRgb originalAreaColor;
+        bool foundAdjactedPixelWithSameColor;
+        bool areaIsTouchingMultipleColors;
+    };
+
+    //since splitting the map requires keeping track of a lot of factors, it's best to keep
+    //track of the by setting them as member fields of a class.
     class WhiteMapToProvinceMap
     {
         public:
-            static void createRegionMapFromWhiteMap(QImage& out, int provinceCount);
+            static void splitMap(QImage& out, int provinceCount, StringNotifiable *noto)
+            {
+                WhiteMapToProvinceMap m(out, provinceCount, noto );
+            }
 
         private:
-            WhiteMapToProvinceMap();
-            static void markAllConnectedNeightbours(int x, int y, std::vector<QRgb *> &sourceLines, QImage& source, QRgb sourceColor, QRgb targetColor);
-            static std::pair<int, int> tryPlaceProvince(int index, std::vector<QRgb*>& outLines, QImage& source, std::default_random_engine &generator);
-            static bool mustBeAdded(int x, int y, QImage& source, std::vector<QRgb *> &sourceLines, QRgb sourceColor);
-            static bool isInBound(int x, int y, QImage& source);
-            static void enlarge(int* modifiedProvinces, int x, int y, std::vector<QRgb*>& outLines, QImage& source, int size, QRgb target);
-            static bool isBlack(QRgb& rgb);
-            static bool isWhite(QRgb& rgb);
-            static void finalFix(std::vector<QRgb*>& outLines, QImage& source);
-            static bool parseFullySourdondedArea(int x, int y, std::vector<QRgb*>& outLines, QImage& source, QRgb targetColor, QRgb sourceColor);
-            static void removeInscribedElements(int x, int y, std::vector<QRgb*>& outLines, QImage& source, QRgb targetColor, std::vector<QRgb*>& suppLines);
-            static inline void putpixel(int x, int y, QImage& source, std::vector<QRgb*>& outLines, int* modifiedProvinces, QRgb& target)
+            WhiteMapToProvinceMap(QImage& out, int provinceCount, StringNotifiable *noto);
+            std::default_random_engine generator;
+            QRgb black;
+            QRgb white;
+            QRgb blue;
+            QString status;
+            MapInfo info;
+            std::vector<std::pair<int, int> > provinceCenters;
+            int provinceCount;
+            StringNotifiable *notif;
+            int makeBlackAndWhite();
+            int makeBlackEdges();
+            void createRegionMapFromWhiteMap();
+            void changeColorOfAreasTouchingBorders();
+            void changeColorOfArea(int x, int y, QRgb sourceColor, QRgb targetColor);
+            int makeProvinceCenters();
+            std::pair<int, int> tryPlaceProvince(int index);
+            int enlarge(int x, int y, int size, QRgb target);
+            inline bool isInBound(int x, int y)
             {
-                if (isInBound(x, y, source) && isWhite(outLines[y][x]))
+                if (x >= 0 && x < info.width && y >= 0 && y < info.height)
+                    return true;
+                return false;
+            }
+            void removeFullyInscribedBlackAreas();
+            void removeFullyInscribedBlackArea(int x, int y, QRgb targetColor);
+            void finalFix();
+            void removeFullyIscribedArea(int x, int y, QRgb targetColor, std::vector<QRgb*>& suppLines);
+            inline QRgb getColor(int x, int y) {return info.sourceLines[y][x];}
+            inline void setColor(int x, int y, QRgb color) {info.sourceLines[y][x] = color;}
+            void parseBlackAreaPixel(int x, int y, std::stack<MarkingData> &stack, InscribedRemovalData &data);
+            inline void putpixel(int x, int y, int* modifiedProvinces, QRgb& target)
+            {
+                if (isInBound(x, y) && white == info.sourceLines[y][x])
                 {
-                    outLines[y][x] = target;
-                    *modifiedProvinces = *modifiedProvinces - 1;
+                    info.sourceLines[y][x] = target;
+                    *modifiedProvinces = *modifiedProvinces + 1;
                 }
             }
-            static void parsePixel(
-                int x,
-                int y,
-                std::stack<MarkingData>& stack,
-                bool* startingCOlor,
-                QRgb black,
-                QRgb blue,
-                QRgb areaColor,
-                bool* foundOne,
-                bool* areaIsTouchingMultipleColors,
-                QRgb* oneNeighbourColor,
-                std::vector<QRgb*>& sourceLines,
-                QImage& source
-                );
+
+            void parsePixel(int x, int y, std::stack<MarkingData>& stack, QRgb black, InscribedRemovalData &data);
     };
 
 }

@@ -90,7 +90,7 @@ void MainWindow::loadBlackImageInAnotherThread(QString path, QString output, int
 {
 
     QImage image(path);
-    mapreader::WhiteMapToProvinceMap::createRegionMapFromWhiteMap(image, provinceCount);
+    mapreader::WhiteMapToProvinceMap::splitMap(image, provinceCount, this);
     image.save(output);
     *ended = true;
 }
@@ -119,13 +119,26 @@ void MainWindow::loadBlackImage()
     QEventLoop lp;
     while (!ended)
     {
+        progress.setLabelText(getNotifyText());
         lp.processEvents();
         if (progress.wasCanceled())
             return;
     }
     progress.hide();
-
     createMap(dialog.getOutput());
+}
+
+void MainWindow::setNotifyText(QString info)
+{
+    std::lock_guard<std::mutex> lock(mutex);
+    operationInfo = info;
+}
+
+QString MainWindow::getNotifyText()
+{
+    std::lock_guard<std::mutex> lock(mutex);
+    return operationInfo;
+
 }
 
 void MainWindow::exportCurrentView()
@@ -425,14 +438,14 @@ void MainWindow::updateMap()
 
     updateBlocker++;
     ProvincesMask mask(map);
-    for (unsigned a = 0; a < map->getProvincesList()->size(); a++)
+    for (int a = 0; a < map->getProvincesList()->size(); a++)
 	{
 		int targetGroup(getUI()->provinceTable->getGroupOfProvince(a));
         QColor col(getUI()->groupTable->getColorOfGroup(targetGroup));
 		mask.setColor(col, int(a));
 	}
 
-    for (unsigned a = 0; a < ui->groupTable->rowCount(); a++)
+    for (int a = 0; a < ui->groupTable->rowCount(); a++)
     {
         mask.setName(ui->groupTable->getColorOfGroup(a), ui->groupTable->getNameOfGroup(a));
     }
