@@ -7,6 +7,7 @@
 #include "depthrange.h"
 #include "blending.h"
 #include "colormask.h"
+#include "alphatest.h"
 
 namespace renderer
 {
@@ -40,6 +41,7 @@ namespace renderer
                 depthRange(),
                 blending(),
                 colorMask(true, true, true, true),
+                alphaTest(),
                 depthMask(true)
             {}
 
@@ -56,6 +58,7 @@ namespace renderer
             DepthRange depthRange;
             Blending blending;
             ColorMask colorMask;
+            AlphaTest alphaTest;
             bool depthMask;
     };
 }

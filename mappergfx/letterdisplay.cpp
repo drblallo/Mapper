@@ -13,10 +13,11 @@ LetterDisplay::LetterDisplay(QOpenGLTexture* texture) : TexturedObject(":/shader
     shader->setUniformValue(val, 0);
     shader->release();
 
-    renderState.blending.setEnabled(true);
-    renderState.blending.setDestinationAlphaFactor(DestinationBlendingOneMinusAlpha);
-    renderState.blending.setSourceAlphaFactor(SourceBlendingSourceAlpha);
+    //renderState.blending.setEnabled(true);
+    //renderState.blending.setDestinationAlphaFactor(DestinationBlendingOneMinusAlpha);
+    //renderState.blending.setSourceAlphaFactor(SourceBlendingSourceAlpha);
     renderState.depthMask = false;
+    renderState.alphaTest.setEnabled(true);
 
     transform.setTranslation(0, 0, 0.02f);
     transform.setScale(1, 1, 1);

@@ -30,6 +30,7 @@ MainWindow::MainWindow() :
     qApp->installEventFilter(this);
     mainWindow = this;
     startUI();
+    currentDir = QDir::currentPath();
 }
 
 void MainWindow::startUI()
@@ -97,7 +98,7 @@ void MainWindow::loadBlackImageInAnotherThread(QString path, QString output, int
 
 void MainWindow::loadBlackImage()
 {
-    BlackMapLoaderDialog dialog;
+    BlackMapLoaderDialog dialog(currentDir);
 
     if (!dialog.exec() || dialog.getOutput().length() == 0)
         return;
@@ -145,10 +146,9 @@ void MainWindow::exportCurrentView()
 {
 
     QFileDialog f(this, tr("Export View"));
-
+    f.setDirectory(currentDir);
     f.setFileMode(QFileDialog::AnyFile);
     f.setNameFilter(tr("Image file (*.png)"));
-    f.setDirectory(QDir::home().absolutePath());
     f.setOption(QFileDialog::DontUseNativeDialog, true);
 
     if (!f.exec())
@@ -198,10 +198,9 @@ void MainWindow::updateBackgroundColor()
 void MainWindow::loadMap()
 {
     QFileDialog f(this, tr("Load Map"));
-
+    f.setDirectory(currentDir);
     f.setFileMode(QFileDialog::ExistingFile);
     f.setNameFilter(tr("Image file (*.png)"));
-    f.setDirectory(QDir::home().absolutePath());
     f.setOption(QFileDialog::DontUseNativeDialog, true);
 
     if (!f.exec())
@@ -229,17 +228,16 @@ void MainWindow::toggleWidgetCamera()
 void MainWindow::loadFont()
 {
     QFileDialog f(this, tr("Load Font"));
-
+    f.setDirectory(currentDir);
     f.setFileMode(QFileDialog::ExistingFile);
     f.setNameFilter(tr("Font file (*.ttf)"));
-    f.setDirectory(QDir::home().absolutePath());
     f.setOption(QFileDialog::DontUseNativeDialog, true);
 
     if (!f.exec())
         return;
 
     fontName = f.selectedFiles()[0];
-    for (int a = 0; a < textTexture.size(); a++)
+    for (unsigned a = 0; a < textTexture.size(); a++)
     {
         textTexture[a]->destroy();
         delete textTexture[a];
@@ -308,10 +306,9 @@ void MainWindow::loadBackground()
     if (!graphic)
         return;
 	QFileDialog f(this, tr("Load File"));
-
+    f.setDirectory(currentDir);
 	f.setFileMode(QFileDialog::ExistingFile);
 	f.setNameFilter(tr("Image file (*.png *.jpg)"));
-	f.setDirectory(QDir::home().absolutePath());
 	f.setOption(QFileDialog::DontUseNativeDialog, true);
 
 	if (!f.exec())
@@ -325,10 +322,9 @@ void MainWindow::saveColors()
     if (!graphic)
         return;
 	QFileDialog f(this, tr("Save File"));
-
+    f.setDirectory(currentDir);
 	f.setFileMode(QFileDialog::AnyFile);
 	f.setNameFilter(tr("Text files (*.txt)"));
-	f.setDirectory(QDir::home().absolutePath());
 	f.setOption(QFileDialog::DontUseNativeDialog, true);
 
 	if (!f.exec())
@@ -376,10 +372,9 @@ void MainWindow::loadColor()
     if (!graphic)
         return;
 	QFileDialog f(this, tr("Load File"));
-
+    f.setDirectory(currentDir);
 	f.setFileMode(QFileDialog::ExistingFile);
 	f.setNameFilter(tr("Text files (*.txt)"));
-	f.setDirectory(QDir::home().absolutePath());
 	f.setOption(QFileDialog::DontUseNativeDialog, true);
 
 	if (!f.exec())
@@ -438,7 +433,7 @@ void MainWindow::updateMap()
 
     updateBlocker++;
     ProvincesMask mask(map);
-    for (int a = 0; a < map->getProvincesList()->size(); a++)
+    for (unsigned a = 0; a < map->getProvincesList()->size(); a++)
 	{
 		int targetGroup(getUI()->provinceTable->getGroupOfProvince(a));
         QColor col(getUI()->groupTable->getColorOfGroup(targetGroup));

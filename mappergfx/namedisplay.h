@@ -25,6 +25,7 @@ namespace mappergfx
             //virtual void setBuffer(const std::vector<float>* list);
             //virtual int getVertexCount() const {return vCount;}
             void addBox(std::vector<float> &buffer, std::vector<QVector2D> &corners, char letter);
+            void addLetterToBuffer(QChar s, QVector2D baseVector, QVector2D heightVector, QVector2D center, std::vector<float>& buffer);
             //int vCount;
             //virtual void Prerender();
             //virtual void PostRender();

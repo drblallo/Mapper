@@ -12,7 +12,7 @@
 using namespace mappergfx;
 using namespace mapreader;
 
-MapGFX::MapGFX(Map& m, float scale, int borderSkip) : map(m), areas(QVector2D(map.getTexture()->width()/-2, map.getTexture()->height()/2))
+MapGFX::MapGFX(Map& m, float scale, int borderSkip) : map(m), areas(QVector2D(map.getTexture()->width()/-2, map.getTexture()->height()/2)), test(NULL)
 {
 	ProvincesMask mask(&m);
 	background = new Background(&m, &mask);
@@ -78,33 +78,11 @@ QVector3D MapGFX::getScale() const
 
 void MapGFX::createTexts(const ProvincesMask* mask)
 {
-    //QVector2D offset(map.getTexture()->width()/-2, map.getTexture()->height()/2);
     NamePlacer plc(mask);
-    /*if (areas.size() == 0)
-    {
-        areas.push_back(new NameDisplay(&plc, offset));
-        NameDisplay* d(areas.back());
-        d->getTransform()->setTranslation(0, 0, 0.02f);
-
-        d->setScale(getScale());
-
-    }*/
-    //else
-    //{
-        areas.setText(&plc);
-    //}
-/*
-    while (areas.size() != 0)
-    {
-        delete areas.back();
-        areas.pop_back();
-    }
-
-    areas.push_back(new NameDisplay(&plc, offset));
-    NameDisplay* d(areas.back());
-    d->getTransform()->setTranslation(0, 0, 0.02f);
-
-    d->getTransform()->setScale(getScale());*/
+    areas.setText(&plc);
+    if (test)
+        delete test;
+    test = new TestSubRegionAreas(&plc, &map,getScale());
 }
 
 void MapGFX::setBackgroundInterpolationValue(float value)

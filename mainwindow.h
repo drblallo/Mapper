@@ -63,6 +63,7 @@ private:
     QSize currentSize;
     QString operationInfo;
     std::mutex mutex;
+    QString currentDir;
 
 protected:
     virtual void update();

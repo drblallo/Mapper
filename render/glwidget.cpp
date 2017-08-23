@@ -39,6 +39,7 @@ void GLWidget::initializeGL()
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glEnable(GL_CULL_FACE);
+  glAlphaFunc(GL_GREATER, 0.5f);
   //glCullFace(GL_BACK);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -159,14 +160,19 @@ void GLWidget::applyRenderState(const RenderState *state)
         }
         renderState.depthTest.setEnabled(state->depthTest.isEnabled());
     }
-    if (state->depthTest.isEnabled())
+    if (state->alphaTest.isEnabled())
     {
-        if (state->depthTest.getDepthTestFunction() != renderState.depthTest.getDepthTestFunction())
+        if (
+                state->alphaTest.getAlphaTestFunction() != renderState.alphaTest.getAlphaTestFunction() ||
+                state->alphaTest.getLimit() != renderState.alphaTest.getLimit()
+           )
         {
-            glDepthFunc(state->depthTest.getDepthTestFunction());
-            renderState.depthTest.setDepthTestFunction(state->depthTest.getDepthTestFunction());
+            glAlphaFunc(state->alphaTest.getAlphaTestFunction(), state->alphaTest.getLimit());
+            renderState.alphaTest.setAlphaTestFunction(state->alphaTest.getAlphaTestFunction());
+            renderState.alphaTest.setLimit(state->alphaTest.getLimit());
         }
     }
+
 
     if (state->facetCulling.isEnabled() != renderState.facetCulling.isEnabled())
     {

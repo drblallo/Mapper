@@ -15,6 +15,10 @@ namespace mappergfx
             QOpenGLTexture* getTexture(int val) const;
 
         private:
+            void createDistanceField(QImage* image, int borderSize);
+            int getDistanceFromColor(int x, int y, std::vector<QRgb*>& modified, QImage* image, int rVal, int borderSize);
             QImage* images[26];
+            QImage* imagesHalfSize[26];
+            void makeImages(QString path, int size);
     };
 }

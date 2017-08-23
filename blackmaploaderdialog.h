@@ -11,6 +11,7 @@ class BlackMapLoaderDialog : public QDialog
 
 public:
     explicit BlackMapLoaderDialog(QWidget *parent = 0);
+    explicit BlackMapLoaderDialog(QString s, QWidget *parent = 0);
     ~BlackMapLoaderDialog();
     QString getOutput();
     QString getInput();
@@ -18,6 +19,7 @@ public:
 
 private:
     Ui::BlackMapLoaderDialog *ui;
+    QString path;
     void startUI();
     void selectInputLine();
     void selectOutputLine();

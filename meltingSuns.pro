@@ -128,7 +128,8 @@ HEADERS  += mainwindow.h \
     mappergfx/letterdisplay.h \
     mapreader/whitemaptoprovincemap.h \
     blackmaploaderdialog.h \
-    interfaces/stringnotifiable.h
+    interfaces/stringnotifiable.h \
+    render/renderState/alphatest.h
 
 FORMS    += mainwindow.ui \
     mechanics/Widgets/stockpileentitywidget.ui \

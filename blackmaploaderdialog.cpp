@@ -10,6 +10,13 @@ BlackMapLoaderDialog::BlackMapLoaderDialog(QWidget *parent) :
     startUI();
 }
 
+BlackMapLoaderDialog::BlackMapLoaderDialog(QString s, QWidget *parent) :  QDialog(parent), ui(new Ui::BlackMapLoaderDialog), path(s)
+{
+    ui->setupUi(this);
+    startUI();
+
+}
+
 BlackMapLoaderDialog::~BlackMapLoaderDialog()
 {
     delete ui;
@@ -24,10 +31,9 @@ void BlackMapLoaderDialog::startUI()
 void BlackMapLoaderDialog::selectInputLine()
 {
     QFileDialog f(this, tr("Load Map"));
-
+    f.setDirectory(path);
     f.setFileMode(QFileDialog::ExistingFile);
     f.setNameFilter(tr("Image file (*.png)"));
-    f.setDirectory(QDir::home().absolutePath());
     f.setOption(QFileDialog::DontUseNativeDialog, true);
 
     if (!f.exec())
@@ -40,10 +46,9 @@ void BlackMapLoaderDialog::selectInputLine()
 void BlackMapLoaderDialog::selectOutputLine()
 {
     QFileDialog f(this, tr("Load Map"));
-
+    f.setDirectory(path);
     f.setFileMode(QFileDialog::AnyFile);
     f.setNameFilter(tr("Image file (*.png)"));
-    f.setDirectory(QDir::home().absolutePath());
     f.setOption(QFileDialog::DontUseNativeDialog, true);
 
     if (!f.exec())

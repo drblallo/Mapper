@@ -48,7 +48,7 @@ TestSubRegionAreas::TestSubRegionAreas(Map* map, QVector3D scale)
 
 
 	ogg = new LinesObject(&quads);
-	ogg->getTransform()->setTranslation(0, 0, -10);
+    ogg->getTransform()->setTranslation(0, 0, 0.03);
 	ogg->getTransform()->setScale(scale);
 }
 
@@ -57,29 +57,29 @@ TestSubRegionAreas::TestSubRegionAreas(NamePlacer* plc, Map* map, QVector3D scal
 	std::vector<renderer::Dot> quads;
 	QVector3D offset(map->getTexture()->width()/-2, map->getTexture()->height()/2, 0);
 
-	for (int b = 0; b < plc->getRegionCount(); b++)
+    for (int b = 0; b < plc->getRegionCount(); b++)
 	{
 		QVector2D* box(plc->getRegion(b)->corners);
 
-		QVector3D start(box[0].x(), -1*box[0].y(), 0);
-		start += offset;
+        QVector3D start(box[0].x(), box[0].y(), 0);
+        start += offset;
 		quads.push_back(renderer::Dot(start));
-		start = QVector3D(box[1].x(), -1*box[1].y(), 0);
-		start += offset;
-		quads.push_back(renderer::Dot(start));
-		quads.push_back(renderer::Dot(start));
-		start = QVector3D(box[2].x(), -1*box[2].y(), 0);
-		start += offset;
+        start = QVector3D(box[1].x(), box[1].y(), 0);
+        start += offset;
 		quads.push_back(renderer::Dot(start));
 		quads.push_back(renderer::Dot(start));
-		start = QVector3D(box[3].x(), -1*box[3].y(), 0);
-		start += offset;
+        start = QVector3D(box[2].x(), box[2].y(), 0);
+        start += offset;
 		quads.push_back(renderer::Dot(start));
 		quads.push_back(renderer::Dot(start));
-		start = QVector3D(box[0].x(), -1*box[0].y(), 0);
-		start += offset;
+        start = QVector3D(box[3].x(), box[3].y(), 0);
+        start += offset;
 		quads.push_back(renderer::Dot(start));
-	}
+		quads.push_back(renderer::Dot(start));
+        start = QVector3D(box[0].x(), box[0].y(), 0);
+        start += offset;
+		quads.push_back(renderer::Dot(start));
+    }
 
     for (int b = 0; b < plc->getRegionCount(); b++)
     {
@@ -94,7 +94,7 @@ TestSubRegionAreas::TestSubRegionAreas(NamePlacer* plc, Map* map, QVector3D scal
     }
 
 	ogg = new LinesObject(&quads);
-    ogg->getTransform()->setTranslation(0, 0, -9.98);
+    ogg->getTransform()->setTranslation(0, 0, 0.03);
 	ogg->getTransform()->setScale(scale);
 }
 

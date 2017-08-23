@@ -2,6 +2,7 @@
 #include <QVector3D>
 #include <QOpenGLTexture>
 #include "namedisplay.h"
+#include "testsubregionareas.h"
 
 namespace mapreader
 {
@@ -40,6 +41,7 @@ namespace mappergfx
 			Borders* borders;
 
             NameDisplay areas;
+            TestSubRegionAreas* test;
 
 
 	};

@@ -8,13 +8,18 @@
 using namespace mappergfx;
 using namespace mapreader;
 
-void insertAllNeighbours(std::vector<bool>* placed, const std::vector<Province*>* provinceList, ConnectedRegions* region, int currentInserting, const ProvincesMask* mask)
+void NamePlacer::insertAllNeighbours
+(
+        const std::vector<Province*>* provinceList,
+        ConnectedRegions* region,
+        int currentInserting
+)
 {
 	std::vector<const Province*> justAdded;
 	std::vector<const Province*> support;
 	Province* p(provinceList->at(currentInserting));
 	justAdded.push_back(p);
-	placed->at(currentInserting) = true;
+    placed.at(currentInserting) = true;
 	QRgb col(mask->getColor(currentInserting));
 	region->regionIndexes.push_back(currentInserting);
 	
@@ -31,12 +36,12 @@ void insertAllNeighbours(std::vector<bool>* placed, const std::vector<Province*>
 			for (unsigned b = 0; b < neighbours.size(); b++)
 			{
 				int index(neighbours[b]->getIndex());
-				QRgb otherCol(mask->getColor(index));
-				if (!placed->at(index) && otherCol == col)
+                QRgb otherCol(mask->getColor(index));
+                if (!placed.at(index) && otherCol == col)
 				{
 					justAdded.push_back(neighbours[b]);
 					region->regionIndexes.push_back(index);
-					placed->at(index) = true;
+                    placed.at(index) = true;
 				}
 			}
 		}
@@ -45,25 +50,23 @@ void insertAllNeighbours(std::vector<bool>* placed, const std::vector<Province*>
 	while (!justAdded.empty());
 }
 
-NamePlacer::NamePlacer(const ProvincesMask* mask)
+NamePlacer::NamePlacer(const ProvincesMask* msk) : mask(msk)
 {
 	const std::vector<Province*>* provinceList(mask->getMap()->getProvincesList());
-	std::vector<bool> placed;
+
 	for (unsigned a = 0; a < provinceList->size(); a++)
 		placed.push_back(false);
 
 	for (unsigned a = 1; a < placed.size(); a++)
 	{
 		division.push_back(ConnectedRegions());
-		insertAllNeighbours(&placed, provinceList, &division.back(), a, mask);
+        insertAllNeighbours(provinceList, &division.back(), a);
 
         while (placed[a+1] && a+1 < placed.size())
-        {
 			a++;
-        }
 	}	
 
-	generateBoxes(mask);
+    generateBoxes();
 }
 
 
@@ -108,11 +111,6 @@ void generateBoundingBox(ConnectedRegions* reg, const ProvincesMask* mask, QVect
                 max.setY(vec.second);
         }
     }
-/*
-    reg->corners[0] = min;
-    reg->corners[1] = QVector2D(min.x(), max.y());
-    reg->corners[2] = max;
-    reg->corners[3] = QVector2D(max.x(), min.y());*/
     *outMin = min;
     *outMax = max;
 }
@@ -154,56 +152,8 @@ void populateEdges(std::vector<QVector2D>* edges, std::vector<QVector2D>* center
         }
 
    }
-   /* for (unsigned a = 0; a < reg->regionIndexes.size(); a++)
-    {
-        const Province* p(mask->getMap()->getProvinceFromIndex(reg->regionIndexes[a]));
-        QVector2D corners[4];
-
-        //corners[0] = QVector2D(p->getBoudingBox()[0].first, p->getBoudingBox()[0].second);
-        //corners[1] = QVector2D(p->getBoudingBox()[0].first, p->getBoudingBox()[1].second);
-        //corners[2] = QVector2D(p->getBoudingBox()[1].first, p->getBoudingBox()[1].second);
-        //corners[3] = QVector2D(p->getBoudingBox()[1].first, p->getBoudingBox()[0].second);
-
-        for (int a = 0; a < 4; a++)
-           corners[a] = QVector2D(p->getCornerBox()[a].first, p->getCornerBox()[a].second);
-
-        std::vector<const Province*> ls;
-        p->getNeighbours(&ls);
-
-
-        for (int a = 0; a < 4; a++)
-        {
-            bool liesInsideOne(false);
-            bool fullySurounded(true);
-            for (unsigned i = 0; i < ls.size(); i++)
-            {
-                const Province* otherProv(ls[i]);
-                if (std::find(reg->regionIndexes.begin(), reg->regionIndexes.end(), otherProv->getIndex()) == reg->regionIndexes.end())
-                {
-                    fullySurounded = false;
-                    continue;
-                }
-                if (boxContains(otherProv->getBoudingBox(), corners[a]) || boxContains(otherProv->getBoudingBox(), corners[(a+1)%4]))
-                {
-                    liesInsideOne = true;
-                }
-            }
-
-            if (!liesInsideOne && !fullySurounded)
-            {
-                edges->push_back(corners[a]);
-                edges->push_back(corners[(a+1)%4]);
-                centers->push_back((corners[a] + corners[(a+2)%4])/2);
-            }
-        }
-    }
-    */
 }
 
-struct box
-{
-    QVector2D corners[4];
-};
 
 bool areOnSameSide(QVector2D line1, QVector2D line2, QVector2D point1, QVector2D point2)
 {
@@ -223,24 +173,24 @@ void reduceSingle(QVector2D first, QVector2D second, QVector2D center, QVector2D
     int target(0);
     bool minOnSameSide(areOnSameSide(first, second, center, *min));
     bool maxOnSameSide(areOnSameSide(first, second, center, *max));
-    if (first.x() - originalMin.x() < oldDistance && !minOnSameSide)
+    if (std::abs(first.x() - originalMin.x()) < oldDistance && !minOnSameSide)
     {
-        oldDistance = first.x() - originalMin.x();
+        oldDistance = std::abs(first.x() - originalMin.x());
     }
-    if (originalMax.x() - first.x() < oldDistance && !maxOnSameSide)
+    if (std::abs(originalMax.x() - first.x()) < oldDistance && !maxOnSameSide)
     {
         target = 1;
-        oldDistance = originalMax.x() - first.x();
+        oldDistance = std::abs(originalMax.x() - first.x());
     }
-    if (originalMax.y() - first.y() < oldDistance && !maxOnSameSide)
+    if (std::abs(originalMax.y() - first.y()) < oldDistance && !maxOnSameSide)
     {
         target = 2;
-        oldDistance = originalMax.y() - first.y();
+        oldDistance = std::abs(originalMax.y() - first.y());
     }
-    if (first.y() - originalMin.y() < oldDistance && !minOnSameSide)
+    if (std::abs(first.y() - originalMin.y()) < oldDistance && !minOnSameSide)
     {
         target = 3;
-        oldDistance = first.y() - originalMin.y();
+        oldDistance = std::abs(first.y() - originalMin.y());
     }
 
     if (target == 0 && !minOnSameSide)
@@ -285,7 +235,7 @@ void rotate( QVector2D* vals, unsigned ammount)
     }
 }
 
-void searchForBox(ConnectedRegions* reg, const ProvincesMask* mask, box* outBox, float angle)
+void NamePlacer::searchForBox(ConnectedRegions* reg, box* outBox, float angle)
 {
     QVector2D min, max;
     QVector2D originalMin, originalMax;
@@ -297,7 +247,7 @@ void searchForBox(ConnectedRegions* reg, const ProvincesMask* mask, box* outBox,
     {
          QVector2D first(rotateQVector(reg->edges[a], angle));
          QVector2D second(rotateQVector(reg->edges[a+1], angle));
-         QVector2D center(rotateQVector(reg->edges[a/2], angle));
+         QVector2D center(rotateQVector(reg->centers[a/2], angle));
 
         reduce(first, second, center ,&min, &max, originalMin, originalMax);
     }
@@ -312,13 +262,48 @@ void searchForBox(ConnectedRegions* reg, const ProvincesMask* mask, box* outBox,
 }
 float evalFuncion(float l1, float l2)
 {
-    float t(l1/l2);
+    float t(std::abs(l1/l2));
     if (t < 1)
         t = 1/t;
-    return (l1*l2)/(t);
+    return (l1*l2)/t;
 }
 
-void generateBox(ConnectedRegions* reg, const ProvincesMask* mask)
+bool NamePlacer::divisionContains(QVector2D vec, ConnectedRegions* reg)
+{
+
+        bool contains(false);
+        for (unsigned c = 0; c < reg->regionIndexes.size(); c++)
+        {
+            const Province* p(mask->getMap()->getProvinceFromIndex(reg->regionIndexes[c]));
+            const std::pair<float, float>* bounding(p->getBoudingBox());
+            if (bounding[0].first < vec.x() &&
+                bounding[1].first > vec.x() &&
+                bounding[0].second < vec.y() &&
+                bounding[1].second > vec.y())
+            {
+                contains = true;
+                break;
+            }
+        }
+        return contains;
+}
+
+bool NamePlacer::isResonable(ConnectedRegions* reg, box& b)
+{
+
+    for (int a = 0; a < 4; a++)
+    {
+        if (!divisionContains(b.corners[a], reg))
+            return false;
+        if (!divisionContains((b.corners[a]+b.corners[(a+1)%4])/2, reg))
+            return false;
+    }
+    if (!divisionContains(((b.corners[0]+b.corners[2])/2), reg))
+        return false;
+    return true;
+}
+
+void NamePlacer::generateBox(ConnectedRegions* reg)
 {
     populateEdges(&reg->edges, &reg->centers, reg, mask);
     if (reg->edges.size() < 2)
@@ -326,18 +311,22 @@ void generateBox(ConnectedRegions* reg, const ProvincesMask* mask)
 
 
     box b, old;
-    searchForBox(reg, mask, &old, 0);
+    //searchForBox(reg, &old, 0);
+    for (int a = 0; a < 4; a++)
+        old.corners[a] = reg->corners[a];
     QVector2D v(old.corners[0] - old.corners[1]);
     QVector2D v2(old.corners[1] - old.corners[2]);
-    float oldDim(evalFuncion(v.length(), v2.length()));
-    oldDim = std::abs(oldDim);
-    for (int a = 1; a < 30; a++)
+    //float oldDim(evalFuncion(v.length(), v2.length()));
+    float oldDim(-1);
+  //  oldDim = std::abs(oldDim);
+    for (int a = 0; a < 30; a++)
     {
-        searchForBox(reg, mask, &b, std::acos(-1)/30.0f*a);
+        searchForBox(reg, &b, std::acos(-1)/30.0f*a);
         v = b.corners[0] - b.corners[1];
         v2 = b.corners[1] - b.corners[2];
         float dim(evalFuncion(v.length(), v2.length()));
-        if (oldDim < dim)
+        dim = std::abs(dim);
+        if (oldDim < dim && isResonable(reg, b))
         {
             oldDim = dim;
             old = b;
@@ -387,14 +376,13 @@ void fixOrientation(ConnectedRegions* outBox)
     }
 }
 
-void NamePlacer::generateBoxes(const ProvincesMask* mask)
+void NamePlacer::generateBoxes()
 {
-    std::cout << division.size() << std::endl;
-	for (unsigned a = 0; a < division.size(); a++)
+    for (unsigned a = 0; a < division.size(); a++) //foreach group of touching province with the same color
 	{
         ConnectedRegions* reg(&division[a]);
         reg->name = "ERROR";
-        if (reg->regionIndexes.size() == 0)
+        if (reg->regionIndexes.size() == 0) //if there are no provinces inside that, something went wrong
 		{
 			for (int c = 0; c < 4; c++)
 				reg->corners[c] = QVector2D(0, 0);
@@ -402,20 +390,16 @@ void NamePlacer::generateBoxes(const ProvincesMask* mask)
             continue;
 		}
         reg->name = mask->getName(reg->regionIndexes.at(0));
-        if (reg->regionIndexes.size() == 1)
-        {
-            const Province* p(mask->getMap()->getProvinceFromIndex(reg->regionIndexes[0]));
-            auto box(p->getCornerBox());
-            for (int c = 0; c < 4; c++)
-            {
-                reg->corners[c] = QVector2D(box[c].first, box[c].second);
-            }
-            fixOrientation(reg);
-            continue;
 
+        const Province* p(mask->getMap()->getProvinceFromIndex(reg->regionIndexes[0]));
+        auto box(p->getCornerBox());
+        for (int c = 0; c < 4; c++)
+        {
+            reg->corners[c] = QVector2D(box[c].first, box[c].second);
         }
 
-        generateBox(reg, mask);
+
+        generateBox(reg); //else generate that box
         fixOrientation(reg);
 	}	
 }

@@ -23,22 +23,6 @@ NameDisplay::NameDisplay(const NamePlacer *region, QVector2D off) :
 
     setText(region);
 
-    /*renderState.blending.setEnabled(true);
-    renderState.blending.setDestinationAlphaFactor(DestinationBlendingOneMinusAlpha);
-    renderState.blending.setSourceAlphaFactor(SourceBlendingSourceAlpha);
-    renderState.depthMask = false;
-
-    shader->bind();
-    std::vector<int> t;
-    for (int a = 0; a < 26; a++)
-        t.push_back(a+1);
-    shader->setUniformValueArray("letters", &(t[0]), 26);
-
-    int val = shader->uniformLocation("tex");
-    shader->setUniformValue(val, 0);
-    shader->release();*/
-
-//    canBeDrawn = true;
 }
 
 NameDisplay::NameDisplay(QVector2D off) : offset(off)
@@ -61,22 +45,29 @@ void NameDisplay::addRegionToBuffer(const ConnectedRegions* region, std::vector<
 
     QVector2D minorEdge(corners[1]-corners[0]);
     QVector2D majorEdge((-1*corners[0])+corners[3]);
+
     QVector2D halfWay((corners[0]+corners[1])/2.0f);
     float val(1.0f/(region->name.length()+2));
-    QVector2D baseOne(val*majorEdge);
-    QVector2D baseTwo(minorEdge.normalized()*baseOne.length());
-    std::string s(region->name.toStdString());
-    for (unsigned a = 0; a < region->name.length(); a++)
+
+    QVector2D baseOne(val/2.0f*majorEdge);
+    for (int a = 0; a < region->name.length(); a++)
     {
-        if (s[a] == ' ' || !region->name[a].isLetter() || !region->name[a].isUpper())
-            continue;
-        std::vector<QVector2D> letterCorners;
-        letterCorners.push_back((halfWay-baseTwo) + ((a+1)*baseOne));
-        letterCorners.push_back((halfWay+baseTwo) + ((a+1)*baseOne));
-        letterCorners.push_back((halfWay+baseTwo) + ((a+2)*baseOne));
-        letterCorners.push_back((halfWay-baseTwo) + ((a+2)*baseOne));
-        addBox(buffer, letterCorners, s[a]);
+        QVector2D baseTwo(minorEdge.normalized()*baseOne.length());
+        QVector2D center(halfWay+(val*majorEdge*(a+1))+baseOne);
+        addLetterToBuffer(region->name[a], baseOne, baseTwo, center, buffer);
     }
+}
+
+void NameDisplay::addLetterToBuffer(QChar s, QVector2D baseVector, QVector2D heightVector, QVector2D center, std::vector<float>& buffer)
+{
+        if (s == ' ' || !s.isLetter() || !s.isUpper())
+            return;
+        std::vector<QVector2D> letterCorners;
+        letterCorners.push_back(center - heightVector - baseVector);
+        letterCorners.push_back(center + heightVector - baseVector);
+        letterCorners.push_back(center + heightVector + baseVector);
+        letterCorners.push_back(center - heightVector + baseVector);
+        addBox(buffer, letterCorners, s.toLatin1());
 
 }
 

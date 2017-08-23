@@ -9,6 +9,9 @@ void main()
 {
    float v = vDepth/farPlane;
    fColor = texture2D(tex, uvPos);
+   if (fColor.a < 0.5)
+       discard;
    gl_FragDepth = v;
+   fColor = vec4(0, 0, 0, 1);
   // fColor = vec4(1, 1, 1, 1);
 }

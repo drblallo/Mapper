@@ -3,6 +3,15 @@
 #include <QVector2D>
 #include <QString>
 
+namespace mapreader
+{
+    class Province;
+}
+
+struct box
+{
+    QVector2D corners[4];
+};
 namespace mappergfx
 {
     class ConnectedRegions
@@ -28,7 +37,14 @@ namespace mappergfx
 
 		private:
 			std::vector<ConnectedRegions> division;
-			void generateBoxes(const ProvincesMask* mask);
+            void generateBoxes();
+            void generateBox(ConnectedRegions* reg);
+            void insertAllNeighbours(const std::vector<mapreader::Province*>* provinceList, ConnectedRegions* region, int currentInserting);
+            void searchForBox(ConnectedRegions* reg, box* outBox, float angle);
+            bool isResonable(ConnectedRegions* reg, box& b);
+            bool divisionContains(QVector2D vec, ConnectedRegions* reg);
+            const ProvincesMask* mask;
+            std::vector<bool> placed;
 
 	};
 }
